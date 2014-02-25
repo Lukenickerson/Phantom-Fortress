@@ -1,0 +1,116 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Phantom Fortress - Deathray Games - miniLD 49</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href='http://fonts.googleapis.com/css?family=Share+Tech|Original+Surfer' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="css/lich.css" />	
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+</head>
+<body>
+
+	<header>
+		<h1>Phantom Fortress</h1>
+	</header>
+	
+	<section id="intro">
+	
+	</section>
+	
+	<section id="controls">
+		<div id="currency">
+			<ul>
+				<li><span class="goldNum"></span><span class="currencyIcon iconGold">Gold</span></li>
+				<li><span class="soulsNum"></span><span class="currencyIcon iconSouls">Soul Shards</span></li>
+				<li><span class="arcaneNum"></span><span class="currencyIcon iconArcane">Arcane Knowledge</span></li>
+				<!---<li><span class="stoneNum"></span><span class="currencyIcon iconStone">Stone</span></li>--->
+				<li><span class="oreNum"></span><span class="currencyIcon iconOre">Ore</span></li>
+				<!---<li><span class="foodNum"></span><span class="currencyIcon iconFood">Food</span></li>--->
+			</ul>
+		</div>
+		<div id="hand">
+			<span class="handHoldingName">Empty</span>
+		</div>
+	</section>
+	
+	<section id="tower">
+		<div id="sky" class="towerLayer">
+		</div>
+		<div id="ground" class="towerLayer">
+		</div>
+		<div id="alerts" class="towerLayer">
+		</div>		
+		<div id="floors" class="towerLayer">
+			<!--- Contains piles, goons, drops --->
+		</div>
+	</section>
+
+	<section id="floorPurchase" class="popUp">
+		<ul class="blockList">
+			<!--- Floor name, description, price --->
+		</ul>
+		<button type="button" class="closePopUp">X</button>
+	</section>
+	
+	<section id="floorInfo" class="popUp">
+		<h1 class="floorName"><!--- Floor name ---></h1>
+		<div class="floorDescription"><!--- Floor description ---></div>
+		<div class="floorAvailability">
+			<h2>Positions Available</h2>
+			<ul>
+				<!--- List of free positions --->
+			</ul>
+		</div>
+		<div class="floorWorkers">
+			<h2>Workers</h2>
+			<ul>
+				<!--- List of Workers --->
+			</ul>
+		</div>
+		<!---
+		<div class="floorStorage">
+		</div>
+		--->
+		</div>
+		<button type="button" class="closePopUp">X</button>
+	</section>
+
+	<section id="goonAssign" class="popUp">
+		<h1>Assign a Goon to the Floor</h1>
+		<ul class="blockList">
+			<!--- Goon name, description, price --->
+		</ul>
+		<button type="button" class="closePopUp">X</button>
+	</section>	
+
+	<section id="goonInfo" class="popUp">
+		<h1>Goon</h1>
+		<div>
+			<!--- Goon name, description, options --->
+		</div>
+		<button type="button" class="closePopUp">X</button>
+	</section>		
+	
+	
+	<section id="settings" class="popUp">
+	
+	</section>	
+	
+	
+	<footer>
+		Created in 48 hours by Luke Nickerson, 
+		<a href="http://deathraygames.com" target="_blank">Death Ray Games</a>, 
+		for <a href="http://www.ludumdare.com/compo/minild-49/?action=preview&uid=17861" target="_blank">miniLD 49</a>.
+	</footer>
+	
+	<script src="js/phantom.js"></script>
+	<script>
+		$(document).ready(function(){
+			window.drg = new PFGameClass();
+			drg.setup();
+		});
+	</script>
+	
+</body>
+</html>

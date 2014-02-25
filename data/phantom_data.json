@@ -1,0 +1,203 @@
+{
+	"floors" : [
+		{
+			"name" 		: "Base"
+			,"description" : "The ground floor of the fortress is wear the combat happens!"
+			,"jobName"	: "guard"
+			,"forSale"	: false
+			,"purchaseCostMultiplier" : 10
+			,"isTopOnly" 	: false
+			,"isBottomOnly"	: false
+			,"workerSpaces"	: 3
+		}
+		,{
+			"name"		: "Mine"
+			,"description" : "A mine allows you to dig valuable ore out of the ground."
+			,"jobName"	: "miner"
+			,"forSale"	: true
+			,"purchaseCostMultiplier" : 1
+			,"isTopOnly" 	: false
+			,"isBottomOnly"	: true
+			,"workerSpaces"	: 2
+			,"earn" : {
+				"ore" : 1
+			}
+		}
+		,{
+			"name"		: "Shipping"
+			,"description" : "A shipping floor allows you to sell ore for gold. Essential for having a steady income of gold."
+			,"jobName"	: "merchant"
+			,"forSale"	: true
+			,"purchaseCostMultiplier" : 1
+			,"isTopOnly" 	: false
+			,"isBottomOnly"	: false			
+			,"workerSpaces"	: 3
+			,"earn" : {
+				"gold" : 2
+			}
+			,"cost" : {
+				"ore" : 1
+			}
+		}
+		,{
+			"name"		: "Traps"
+			,"description" : "[doesn't work yet]"
+			,"jobName"	: "guard"
+			,"forSale"	: false
+			,"purchaseCostMultiplier" : 10
+			,"isTopOnly" 	: false
+			,"isBottomOnly"	: false			
+			,"workerSpaces"	: 2			
+		}	
+		,{
+			"name"		: "Experiment"
+			,"description" : "The dark experiments done on this floor will convert souls into arcane knowledge."
+			,"jobName"	: "investigator"
+			,"forSale"	: true
+			,"purchaseCostMultiplier" : 5
+			,"isTopOnly" 	: false
+			,"isBottomOnly"	: false			
+			,"workerSpaces"	: 2
+			,"earn" : {
+				"arcane" : 3
+			}
+			,"cost" : {
+				"souls" : 2
+			}
+		}	
+		,{
+			"name"		: "Library"
+			,"description" : "Research done on this floor will increase arcane knowledge."
+			,"jobName"	: "researcher"
+			,"forSale"	: true
+			,"purchaseCostMultiplier" : 3
+			,"isTopOnly" 	: false
+			,"isBottomOnly"	: false			
+			,"workerSpaces"	: 2
+			,"earn" : {
+				"arcane" : 1, "gold" : 1
+			}			
+		}
+		,{
+			"name"		: "Storage"
+			,"description" : "[doesn't work yet]"
+			,"forSale"	: false
+			,"purchaseCostMultiplier" : 1
+			,"isTopOnly" 	: false
+			,"isBottomOnly"	: false			
+		}
+		,{
+			"name"		: "Telescope"
+			,"description" : "Viewing the cosmic heavens produces arcane knowledge."
+			,"jobName"	: "astrologer"
+			,"forSale"	: true
+			,"purchaseCostMultiplier" : 10
+			,"isTopOnly" 	: true
+			,"isBottomOnly"	: false			
+			,"workerSpaces"	: 2
+			,"earn" : {
+				"arcane" : 2
+			}			
+		}
+		,{
+			"name"		: "Portal"
+			,"description" : "Powerful arcane magics can be used to summon souls from the Netherworld."
+			,"jobName"	: "gatekeeper"
+			,"forSale"	: true
+			,"purchaseCostMultiplier" : 20
+			,"isTopOnly" 	: false
+			,"isBottomOnly"	: false			
+			,"workerSpaces"	: 2
+			,"earn" : {
+				"souls" : 3
+			}
+			,"cost" : {
+				"arcane" : 4
+			}
+		}
+		,{
+			"name"		: "Crypt"
+			,"description" : "Tending the tombs of the dead provides some soul shards."
+			,"jobName"	: "undertaker"
+			,"forSale"	: true
+			,"purchaseCostMultiplier" : 3
+			,"isTopOnly" 	: false
+			,"isBottomOnly"	: true			
+			,"workerSpaces"	: 1			
+			,"earn" : {
+				"souls" : 1
+			}			
+		}
+	]
+	,"goons" : [
+		{
+			"name"		: "Phantom Lord"
+			,"isUndead"	: true
+			,"weightMultiplier" : 0.1
+			,"forSale"	: false
+			,"hitPoints" 	: 30
+			,"damage"		: 1
+		}	
+		,{
+			"name"		: "Ghost"
+			,"isUndead"	: true
+			,"weightMultiplier" : 0.2
+			,"forSale"	: true
+			,"cost" : {
+				"souls" : 10
+			}
+			,"hitPoints" 	: 10
+			,"damage"		: 2
+		}
+		,{
+			"name"		: "Orc"
+			,"isUndead"	: false
+			,"weightMultiplier" : 1
+			,"forSale"	: true
+			,"cost" : {
+				"gold" : 10
+			}
+			,"hitPoints" 	: 20
+			,"damage"		: 1
+		}
+		,{
+			"name"		: "Poison Ghost"
+			,"isUndead"	: true
+			,"weightMultiplier" : 0.15
+			,"forSale"	: true
+			,"cost" : {
+				"souls" : 30
+			}
+			,"hitPoints" 	: 10
+			,"damage"		: 6
+		}		
+		,{
+			"name"		: "Deep Orc"
+			,"isUndead"	: false
+			,"weightMultiplier" : 1.2
+			,"forSale"	: true
+			,"cost" : {
+				"gold" : 50
+			}
+			,"hitPoints" 	: 40
+			,"damage"		: 2
+		}		
+	]
+	,"invaders" : [
+		{
+			"name"		: "Knight"
+			,"isUndead"	: false
+			,"weightMultiplier" : 1.4
+			,"hitPoints" 	: 15
+			,"damage"		: 2
+		}	
+		,{
+			"name"		: "Cleric"
+			,"isUndead"	: false
+			,"weightMultiplier" : 1.2
+			,"hitPoints" 	: 15
+			,"damage"		: 2
+		}
+	]		
+	
+}

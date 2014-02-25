@@ -1,0 +1,405 @@
+html {
+	min-height: 100%;
+    margin: 0;
+    width: 100%;
+    height: auto;
+	background-color: #666;
+}
+body {
+	font-family: 'Arial', sans-serif;
+}
+
+button {
+    outline: none;
+	display: inline-block;
+}
+
+h1, h2 {
+	font-family: 'Original Surfer', cursive;
+}
+h1 {
+	font-size: 2em;
+}
+
+.blockList {
+	display: block;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+/* =========== Header / Menus ============ */
+
+header {
+	display: block;
+	position: absolute; z-index: 20;
+	top: 3em; left: 10%;
+}
+	header h1 {
+		margin: 0; padding: 0.25em 0;
+		
+		font-size: 68px;
+		color: rgba(255,255,255,0.2);
+		text-shadow: 0 0 0.5em #333366;
+	}
+
+#controls {
+	position: absolute; z-index: 20;
+	left: 0; top: 0;
+	/* height: 3em; */
+	width: 100%;
+	background-color: rgba(200,200,255,0.6);
+	font-family: 'Share Tech', sans-serif;
+	font-size: 120%;
+	/* text-shadow: -1px -1px 0 rgba(255,255,255,0.2), 0 0 0.2em rgba(255,255,255,0.2); */
+}
+	#currency {
+		display: block;
+	}
+	#currency ul {
+		display: block;
+		padding: 1em;
+		margin: 0;
+		list-style: none;
+	}
+	#currency ul > li {
+		display: inline-block;
+		margin: 0 1em;
+		padding: 0;
+	}
+
+		.currencyIcon {
+			display: inline-block;
+			margin: 0 1em;
+		}
+	
+	#hand {
+		display: none;
+		position: absolute;
+		top: 0; right: 0;		
+		width: 90px; height: 90px;
+		border: solid 0.25em rgba(200,200,255,0.6);
+		background-color: #333;
+		box-shadow: inset 0 0 1em rgba(0,0,0,0.5);
+	}
+
+footer {
+	position: fixed; z-index: 60;
+	bottom: 0;
+	width: 100%;
+	padding: 1em 0;
+	text-align: center;
+	color: #9999ff;
+	text-shadow: 0 0 1em #000;
+	font-family: 'Share Tech', sans-serif;
+}
+footer a {
+	color: #9999ff;
+}
+
+
+/* ======== PopUp Menus ======== */
+	
+.popUp {
+	display: none;
+	position: fixed; z-index: 100;
+	top: 0; left: 0;
+	width: 92%; height: 92%;
+	margin: 1% 1%;
+	padding: 3%;
+	border-radius: 1em;
+	box-shadow: inset 0 0 1em white, 0 0 2em black;
+	background-color: rgba(200,200,255,0.9);
+	overflow: auto;
+}
+.popUp:after {
+	position: fixed;
+	top: 0; left: 0;
+	width: 10em; height: 10em;
+	background-color: rgba(255,0,0,0.9);
+}
+
+.closePopUp {
+	position: absolute; z-index: 101;
+	top: 0; right: 0;
+	font-size: 150%;
+	padding: 0.5em 1em;
+	background: black;
+	color: white;
+	border: solid 1px white;
+	border-radius: 1em;
+	cursor: pointer;
+}
+
+
+.buyFloor {
+	display: block;
+	padding: 1em 2em;
+	border-bottom: solid 1px rgba(0,0,0,0.5);
+	cursor: pointer;
+}
+.buyFloor:after {
+	content: "click to buy floor";
+}
+.buyFloor.canAfford:hover {
+	background-color: rgba(255,255,255,0.3);
+}
+.buyFloor.cannotAfford:hover {
+	background-color: rgba(255,0,0,0.7);
+}
+
+.emptyWorkerSpace {
+	display: inline-block;
+	padding: 1em;
+	width: 5em;
+	height: 5em;
+	margin: 0 1em 1em 0;
+	border: solid 1px black;
+}
+.viewAssignWorker:after {
+	content: "click to add worker";
+}
+.viewAssignWorker:hover {
+	background-color: rgba(255,255,255,0.25);
+}
+
+.buyGoon {
+	display: inline-block;
+	padding: 1em;
+	width: 10em;
+	height: 5em;
+	margin: 0 1em 1em 0;
+	border: solid 1px black;
+}
+.buyGoon:after {
+	content: "click to buy goon worker";
+}
+.buyGoon:hover {
+	background-color: rgba(255,255,255,0.25);
+}
+
+.viewAssignWorker:after
+,.buyFloor:after
+,.buyGoon:after {
+	display: inline-block;
+	margin: 0.5em 1em;
+	float: right;
+	color: blue;
+	font-size: 80%;
+}
+
+	
+/* ======== Tower ======== */
+	
+#tower, .towerLayer {
+	display: block;
+	position: absolute;
+	top: 0; left: 0;
+	width: 100%;
+	height: 100%;
+	min-height: 100%;
+}
+#tower {
+	overflow: hidden;
+}
+.towerLayer {
+	height: inherit;
+}
+	#sky {
+		background-color: #9999ff;
+		background: -webkit-linear-gradient(top, #333366, #9999ff) fixed;
+	}
+	
+	#ground {
+		top: 50%;
+		background-color: #161616;
+		background-repeat: repeat-x;
+		background-position: top left;
+		background-image: url('../images/ground_300.png');
+	}	
+
+	#floors {
+		width: 80%;
+		max-width: 600px;
+		height: auto;
+		left: 10%; top: 200px;
+		/* background-color: rgba(40,40,40,0.3); */
+	}
+	
+	#floors > div {
+		width: 100%;
+		height: 160px;
+		position: relative;
+		/* border: solid 1px green; */
+	}
+
+.floorTop
+,.floorBottom
+,.viewFloor
+,.viewAssignWorker
+,.buyGoon {
+	cursor: pointer;
+}
+
+.floorTop, .floorBottom {
+	line-height: 100px;
+	font-size: 150%;
+	text-align: center;
+	font-family: 'Original Surfer', cursive;
+	color: rgba(255,255,255,0.5);
+}
+.floorTop:hover
+,.floorBottom:hover {
+	/*
+	border: solid 1px rgba(255,255,0,0.5);
+	margin: -1px -1px -1px -1px;
+	*/
+	background-color: rgba(255,255,255,0.2);
+	text-shadow: 0 0 0.5em black;
+	
+}
+
+.floor, .floorTop, .floorBottom {
+	background-position: center center;
+	background-size: 100% 100%;
+}
+.floor {
+	font-family: 'Original Surfer', cursive;
+}
+.floor .floorName {
+	display: none;
+	padding: 0.5em 1em;
+	font-size: 150%;
+	color: white;
+	text-shadow: 0 0 0.5em black, 1px 1px 0 black;
+}
+.floor:hover .floorName {
+	display: inline-block;
+}
+
+.floorTop {			background-image: url('../images/floor_top.png'); }
+.floorBottom {		background-image: url('../images/floor_bottom.png'); }
+
+.floor_Base {		background-image: url('../images/floor_base.png'); }
+.floor_Mine {		background-image: url('../images/floor_mine.png'); }
+.floor_Shipping {	background-image: url('../images/floor_boxes.png'); }
+.floor_Traps {		background-image: url('../images/floor_plain.png'); }
+.floor_Experiment {	background-image: url('../images/floor_experiment.png'); }
+.floor_Library {	background-image: url('../images/floor_library.png'); }
+.floor_Storage {	background-image: url('../images/floor_boxes.png'); }
+.floor_Telescope {	background-image: url('../images/floor_telescope.png'); }
+.floor_Portal {		background-image: url('../images/floor_portal.png'); }
+.floor_Crypt {		background-image: url('../images/floor_crypt.png'); }
+
+/* ============== Characters ========== */
+
+.goon, .invader {
+	display: block;
+	position: absolute;
+	width: 100px;
+	height: 100px;
+	bottom: 0;
+	left: -5000px;
+	text-align: center;
+	color: transparent;
+	/* background-color: rgba(255,255,255,0.4); */
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: 100% 100%;
+}
+.goon:hover, .invader:hover {
+	color: white;
+	text-shadow: 0 0 0.1em black, 1px 1px 0 black;
+}
+.goon_PhantomLord {
+	width: 140px;
+	height: 140px;
+	background-image: url('../images/phantom_170_left.png');
+}
+.goon_PhantomLord.rightFacing {	background-image: url('../images/phantom_170_right.png'); }
+.goon_PhantomLord.dead {		background-image: url('../images/phantom_170_dead.png'); }
+.goon_Ghost {					background-image: url('../images/ghost_160_left.png'); }
+.goon_Ghost.rightFacing {		background-image: url('../images/ghost_160_right.png'); }
+.goon_Ghost.dead {				background-image: url('../images/ghost_160_dead.png'); }
+.goon_Orc {						background-image: url('../images/orc_160_left.png'); }
+.goon_Orc.rightFacing {			background-image: url('../images/orc_160_right.png'); }
+.goon_Orc.dead {				background-image: url('../images/orc_160_dead.png'); }
+.goon_PoisonGhost {				background-image: url('../images/poisonghost_160_left.png'); }
+.goon_PoisonGhost.rightFacing {	background-image: url('../images/poisonghost_160_right.png'); }
+.goon_PoisonGhost.dead {		background-image: url('../images/ghost_160_dead.png'); }
+.goon_DeepOrc {					background-image: url('../images/deeporc_160_left.png'); }
+.goon_DeepOrc.rightFacing {		background-image: url('../images/deeporc_160_right.png'); }
+.goon_DeepOrc.dead {			background-image: url('../images/orc_160_dead.png'); }
+
+.invader_Knight {				background-image: url('../images/knight_160_left.png'); }
+.invader_Knight.rightFacing {	background-image: url('../images/knight_160_right.png'); }
+.invader_Knight.dead {			background-image: url('../images/knight_160_dead.png'); }
+.invader_Cleric {				background-image: url('../images/cleric_160_left.png'); }
+.invader_Cleric.rightFacing {	background-image: url('../images/cleric_160_right.png'); }
+.invader_Cleric.dead {			background-image: url('../images/cleric_160_dead.png'); }
+
+.damage {
+	position: absolute;
+	width: 1em; height: 1em;
+	padding: 0.2em 0.4em;
+	background-color: red;
+	color: white;
+	text-align: center;
+	border-radius: 1em;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Helpers */
+
+.clearfix:before,
+.clearfix:after {
+    content: " ";
+    display: table;
+}
+
+.clearfix:after {
+    clear: both;
+}
+
+.clearfix {
+    *zoom: 1;
+}
+
+
+/* === Media Queries for RESPONSIVE === */
+
+@media only screen and (max-height : 30em) {
+
+}
+
+@media only screen and (max-width : 1000px) {
+
+
+	
+}
+
+
+@media only screen and (max-width : 700px) {
+
+
+	
+}
+
+@media only screen and (max-width : 400px) {
+
+
+}
+

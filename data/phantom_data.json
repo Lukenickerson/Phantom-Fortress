@@ -198,6 +198,13 @@
 			,"hitPoints" 	: 15
 			,"damage"		: 2
 		}
+		,{
+			"name"		: "Hierophant"
+			,"isUndead"	: false
+			,"weightMultiplier" : 1.0
+			,"hitPoints" 	: 10
+			,"damage"		: 2
+		}		
 	]		
 	
 }

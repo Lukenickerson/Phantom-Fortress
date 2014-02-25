@@ -366,6 +366,9 @@ footer a {
 .invader_Cleric {				background-image: url('../images/cleric_160_left.png'); }
 .invader_Cleric.rightFacing {	background-image: url('../images/cleric_160_right.png'); }
 .invader_Cleric.dead {			background-image: url('../images/cleric_160_dead.png'); }
+.invader_Hierophant {				background-image: url('../images/hierophant_160_left.png'); }
+.invader_Hierophant.rightFacing {	background-image: url('../images/hierophant_160_right.png'); }
+.invader_Hierophant.dead {			background-image: url('../images/hierophant_160_dead.png'); }
 
 .damage {
 	position: absolute;

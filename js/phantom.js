@@ -614,7 +614,7 @@ var PFGameClass = function ()
 			,"locomotionVelX" : this.getRandomVelocity("left")
 			,"locomotionVelY" : 0
 			,"externalVelX" : 0
-			,"externalVelY" : 0			
+			,"externalVelY" : 5			
 			,"floorKey" : "F0"
 			,"isOutside" : true
 			,"hp"		: invaderType.hitPoints
@@ -923,7 +923,7 @@ var PFGameClass = function ()
 		newFloor[arrayName].push(toonKey);
 		// Now add the element to the floor so we don't have to refresh all toons in the DOM
 		var $floor = this.$floors.find('.floorKey' + newFloorKey);
-		this.setToon$Elt(toon, toonType).hide().appendTo($floor).fadeIn(200);	
+		this.setToon$Elt(toon, toonType).hide().appendTo($floor).fadeIn(100);	
 	}
 	
 	

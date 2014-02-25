@@ -12,6 +12,7 @@
 
 	<header>
 		<h1>Phantom Fortress</h1>
+		<div class="subTitle">ver 0.4</div>
 	</header>
 	
 	<section id="intro">
@@ -21,12 +22,12 @@
 	<section id="controls">
 		<div id="currency">
 			<ul>
-				<li><span class="goldNum"></span><span class="currencyIcon iconGold">Gold</span></li>
-				<li><span class="soulsNum"></span><span class="currencyIcon iconSouls">Soul Shards</span></li>
-				<li><span class="arcaneNum"></span><span class="currencyIcon iconArcane">Arcane Knowledge</span></li>
-				<!---<li><span class="stoneNum"></span><span class="currencyIcon iconStone">Stone</span></li>--->
-				<li><span class="oreNum"></span><span class="currencyIcon iconOre">Ore</span></li>
-				<!---<li><span class="foodNum"></span><span class="currencyIcon iconFood">Food</span></li>--->
+				<li><span class="currNum goldNum"></span><span class="currencyIcon iconGold">Gold</span></li>
+				<li><span class="currNum soulsNum"></span><span class="currencyIcon iconSouls">Soul Shards</span></li>
+				<li><span class="currNum stoneNum"></span><span class="currencyIcon iconStone">Stone</span></li>
+				<li><span class="currNum oreNum"></span><span class="currencyIcon iconOre">Ore</span></li>
+				<li><span class="currNum arcaneNum"></span><span class="currencyIcon iconArcane">Arcane Knowledge</span></li>
+				<!---<li><span class="currNum foodNum"></span><span class="currencyIcon iconFood">Food</span></li>--->
 			</ul>
 		</div>
 		<div id="hand">
@@ -68,6 +69,12 @@
 				<!--- List of Workers --->
 			</ul>
 		</div>
+		<div class="naturalResources">
+			<h2>Natural Resources</h2>
+			<ul>
+				<!--- List of resources Left --->
+			</ul>
+		</div>
 		<!---
 		<div class="floorStorage">
 		</div>
@@ -90,7 +97,7 @@
 			<!--- Goon name, description, options --->
 		</div>
 		<button type="button" class="closePopUp">X</button>
-	</section>		
+	</section>
 	
 	
 	<section id="settings" class="popUp">
@@ -99,9 +106,10 @@
 	
 	
 	<footer>
-		Created in 48 hours by Luke Nickerson, 
+		Created by Luke Nickerson, 
 		<a href="http://deathraygames.com" target="_blank">Death Ray Games</a>, 
-		for <a href="http://www.ludumdare.com/compo/minild-49/?action=preview&uid=17861" target="_blank">miniLD 49</a>.
+		originally for
+		<a href="http://www.ludumdare.com/compo/minild-49/?action=preview&uid=17861" target="_blank">miniLD 49</a>.
 	</footer>
 	
 	<script src="js/phantom.js"></script>

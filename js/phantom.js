@@ -42,22 +42,25 @@ var PFGameClass = function ()
 	this.game = {
 		"floorKeyCounter" : 0
 		,"floors" : {
-			"0" : {
+			"F0" : {
 				"floorTypeId" : 0
-				,"goonKeyArray" : [0]
+				,"goonKeyArray" : ["G0"]
 				,"invaderKeyArray" : []
+				,"naturalResources" : {}
 			}
 		
 		}
-		,"floorArray" : ["0"] //2,2,2,2,2,2,2,2]
+		,"floorArray" : ["F0"] //2,2,2,2,2,2,2,2]
 		,"goonKeyCounter" : 0
 		,"goons" : {
-			"0" : {		// The Phantom Lord
+			"G0" : {		// The Phantom Lord
 				"goonTypeId" : 0
 				,"$elt" : {}
 				,"facing" : "left"
-				,"speedX" : 0.1
-				,"speedY" : 0
+				,"locomotionVelX" : 0.1
+				,"locomotionVelY" : 0
+				,"externalVelX" : 0
+				,"externalVelY" : 0
 				,"x" : 0
 				,"y" : 0
 				,"floorKey" : "0"
@@ -66,12 +69,14 @@ var PFGameClass = function ()
 				,"damage"	: 2
 				,"isDead"	: false
 				,"isImmortal" : true
+				,"isGoon"	: true
 			}
 		}
 		,"invaderKeyCounter" : 0
 		,"invaders" : {
 		
 		}
+		,"challenge" : 5	// How many extra invaders
 		/*
 		,
 		"upgrades" : {
@@ -93,11 +98,11 @@ var PFGameClass = function ()
 	this.floorHeight = 160;
 	this.floorWidth = 600;
 	this.meleeRange = 100;
-	this.maxInvaders = 5;
 	
 	// Calculated Game Data
 	this.topFloorsCount = 0;
 	this.bottomFloorsCount = 0;
+	this.maxInvaders = 1;
 	this.total = {
 		"gold"		: 200
 		,"souls" 	: 40
@@ -106,6 +111,7 @@ var PFGameClass = function ()
 		,"ore"		: 0
 		,"food"		: 0
 	};
+	this.currencyTotal = 0;
 	this.perSecond = {
 		"gold"		: 0
 		,"souls" 	: 0
@@ -128,6 +134,8 @@ var PFGameClass = function ()
 		o.total.stone 	+= (o.perSecond.stone * o.secondsPerLoop);
 		o.total.ore 	+= (o.perSecond.ore * o.secondsPerLoop);
 		o.total.food 	+= (o.perSecond.food * o.secondsPerLoop);
+		o.currencyTotal = o.total.gold + o.total.souls + o.total.arcane 
+			+ o.total.stone + o.total.ore + o.total.food;
 
 		if (o.total.gold < 0) 	o.total.gold = 0;
 		if (o.total.souls < 0) 	o.total.souls = 0;
@@ -155,10 +163,11 @@ var PFGameClass = function ()
 				if (!goon.isDead) {
 					var r = o.roll1d(100);
 					if (r == 1) {
-						goon.facing = (goon.facing == "left") ? "right" : "left";
-						goon.speedX = o.getRandomSpeed();
+						
+						o.turnToon(goon);
+						goon.locomotionVelX = o.getRandomVelocity(goon.facing);
 					} else if (r == 2) {
-						goon.speedX = o.getRandomSpeed();
+						goon.locomotionVelX = o.getRandomVelocity(goon.facing);
 					}
 				}
 			}
@@ -216,8 +225,18 @@ var PFGameClass = function ()
 				+ ' data-floorkey="' + floorKey + '">'
 				//+ 'Floor Key: ' + floorKey
 				//+ ' floor number ' + f + '-' 
-				+ '<span class="floorName">' + floorTypeObj.name + '</span>'
-				+ '</div>';
+				+ '<span class="floorName">' + floorTypeObj.name + '</span>';
+			if (typeof floorObj.naturalResources === "object") {
+				h += '<div class="naturalResourcesIndicator">';
+				for (var n in floorObj.naturalResources) {
+					if (floorObj.naturalResources[n] > 0) {
+						n = this.getProperCase(n);
+						h += '<span class="currencyIcon icon' + n + '">' + n + '</span>';
+					}
+				}
+				h += '</div>';
+			}
+			h += '</div>';
 			//if (floorTypeObj.name == "Base") foundGroundFloor = true;
 			//if (foundGroundFloor == true) {
 			//	this.bottomFloorsCount++;
@@ -251,7 +270,7 @@ var PFGameClass = function ()
 	
 	this.populateTower = function ()
 	{
-		console.log("Populating the Tower with goons and invaders");
+		console.log("Populating the Tower with goons and invaders...");
 		// Loop through all constructed rooms of the tower
 		for (var f in this.game.floorArray) {
 			var floorKey = this.game.floorArray[f];
@@ -259,42 +278,48 @@ var PFGameClass = function ()
 			var $floor = this.$floors.find('.floorKey' + floorKey);
 			//=== Add Goons to the DOM
 			$floor.find(".goon").remove();
-			console.log("Floor " + floorKey + " workerGoonKeyArrray: [" + floor.goonKeyArray + "]");
+			//console.log("Floor " + floorKey + " workerGoonKeyArrray: [" + floor.goonKeyArray + "]");
 			for (var i in floor.goonKeyArray) {
 				var goonKey = floor.goonKeyArray[i];
 				var goon = this.game.goons[goonKey];
-				var goonType = this.data.goons[goon.goonTypeId];
-				var goonTypeName = goonType.name.replace(/\s+/g, ''); // Remove spaces
-				console.log("Goon key: " + goonKey + ", Type: " + goonType.name);
-				var h = '<div class="goon ' + goon.facing + 'Facing goon_' + goonTypeName 
-					+ ((goon.isDead) ? ' dead ' : '')
-					+ '">'
-					+ goonType.name
-					+ '</div>';
-				goon.$elt = $(h);
-				goon.$elt.appendTo($floor);
+				if (typeof goon !== "undefined") {
+					var goonType = this.data.goons[goon.goonTypeId];
+					this.setToon$Elt(goon, goonType).appendTo($floor);
+				}
 			}
 			//=== Add Invaders to the DOM
 			$floor.find(".invader").remove();
 			for (var i in floor.invaderKeyArray) {
 				var invKey = floor.invaderKeyArray[i];
 				var invader = this.game.invaders[invKey];
-				var invaderType = this.data.invaders[invader.invaderTypeId];
-				var invaderTypeName = invaderType.name.replace(/\s+/g, ''); // Remove spaces
-				console.log("Invader key: " + invKey + ", Type: " + invaderType.name);
-				var h = '<div class="invader ' + invader.facing + 'Facing invader_' + invaderTypeName 
-					+ ((invader.isDead) ? ' dead ' : '')
-					+ '">'
-					+ invaderType.name
-					+ '</div>';
-				invader.$elt = $(h);
-				invader.$elt.appendTo($floor);
+				if (typeof invader !== "undefined") {
+					var invaderType = this.data.invaders[invader.invaderTypeId];
+					this.setToon$Elt(invader, invaderType).appendTo($floor);
+				}
 			}			
 			//console.log($floor.html());
 		}
 		
 		// *** Loop through piles
 	}
+	
+	this.setToon$Elt = function (toon, toonType) 
+	{
+		var toonMainType = (toon.isGoon) ? "goon" : "invader";
+		//console.log("Setting Toon Element : " + toonMainType);
+		var toonTypeName = toonType.name.replace(/\s+/g, ''); // Remove spaces
+		var h = '<div class="'
+			+ ' ' + toonMainType
+			+ ' ' + toon.facing + 'Facing'
+			+ ' ' + toonMainType + '_' + toonTypeName 
+			+ ((toon.isDead) ? ' dead ' : '')
+			+ '">'
+			+ toonType.name
+			+ '</div>';
+		toon.$elt = $(h);
+		return toon.$elt;
+	}
+	
 	
 	this.calculateFloorsCounts = function ()
 	{
@@ -324,7 +349,8 @@ var PFGameClass = function ()
 		var floorTypeObj = this.data.floors[floorObj.floorTypeId];
 		var $floorAvailability = this.$floorInfo.find('.floorAvailability').hide();
 		var $floorWorkers = this.$floorInfo.find('.floorWorkers').hide();
-		var availHtml = "", workersHtml = "";
+		var $floorNR = this.$floorInfo.find('.naturalResources').hide();
+		var availHtml = "", workersHtml = "", nrHtml = "";
 	
 		if (typeof floorTypeObj.workerSpaces === 'undefined') floorTypeObj.workerSpaces = 0;
 		if (floorTypeObj.workerSpaces == 0) {
@@ -355,6 +381,14 @@ var PFGameClass = function ()
 		}
 		if (workersHtml != "") {
 			$floorWorkers.fadeIn().children('ul').html(workersHtml);
+		}
+		console.log("floorObj.naturalResources");
+		console.log(floorObj.naturalResources);
+		for (var n in floorObj.naturalResources) {
+			nrHtml += '<li>' + floorObj.naturalResources[n] + ' ' + n + '</li>';
+		}
+		if (nrHtml != "") {
+			$floorNR.fadeIn().children('ul').html( nrHtml );
 		}
 		this.$floorInfo.slideDown(200);
 	}
@@ -407,24 +441,34 @@ var PFGameClass = function ()
 		var o = this;
 		var floorType = o.data.floors[floorTypeId];
 		var cost = o.getFloorCost(isTop, floorType);
-		if (o.total.gold > cost) {
+		if (o.total.gold >= cost) {
 			o.eraseCurrency("gold", cost);
 			// Add floor to game data
 			o.game.floorKeyCounter++;
-			var newFloorKey = o.game.floorKeyCounter.toString();
+			var newFloorKey = "F" + o.game.floorKeyCounter.toString();
 			o.game.floors[newFloorKey] = {
 				"floorTypeId" : floorTypeId
 				,"goonKeyArray" : []
 				,"invaderKeyArray" : []
+				,"naturalResources" : {}
 			};
-			console.log("Adding floor, key = " + newFloorKey); console.log(isTop); console.log(this.game.floorArray);
+			console.log("Adding floor, key = " + newFloorKey + ", isTop = " + isTop); 
 			if (isTop) {
 				o.game.floorArray.unshift(newFloorKey);
 			} else {
 				o.game.floorArray.push(newFloorKey);
+				var nr = {
+					"stone" : 100 + (o.roll1d(6) * 50)
+					//,"ore"	: 0
+					//,"gold"	: 0
+				};
+				if (o.roll1d(3) == 1) nr.ore = (o.roll1d(6) * 50);
+				if (o.roll1d(5) == 1) nr.gold = (o.roll1d(6) * 50);
+				o.game.floors[newFloorKey].naturalResources = nr;
 			}
-			console.log(o.game.floorArray);
+			//console.log(o.game.floors[newFloorKey]);
 			o.drawTower();
+			
 		} else {
 			o.notify("You cannot afford this floor yet.");
 		}
@@ -518,15 +562,18 @@ var PFGameClass = function ()
 		var goonType = this.data.goons[goonTypeId];
 		// Add goon to game data
 		this.game.goonKeyCounter++;
-		var newKey = this.game.goonKeyCounter.toString();
+		var newKey = "G" + this.game.goonKeyCounter.toString();
+		var faceWhere = ((this.roll1d(2) == 2) ? "left" : "right");
 		this.game.goons[newKey] = {
 			"goonTypeId" : goonTypeId
 			,"$elt" : {}
-			,"facing" : ((this.roll1d(2) == 2) ? "left" : "right")
+			,"facing" : faceWhere
 			,"x" : 0
 			,"y" : 0
-			,"speedX" : this.getRandomSpeed()
-			,"speedY" : 0
+			,"locomotionVelX" : this.getRandomVelocity(faceWhere)
+			,"locomotionVelY" : 0
+			,"externalVelX" : 0
+			,"externalVelY" : 0			
 			,"floorKey" : floorKey
 			,"isOutside" : false
 			,"hp"		: goonType.hitPoints
@@ -544,24 +591,31 @@ var PFGameClass = function ()
 	
 	this.addInvader = function (invaderTypeId) 
 	{
+		// Calculate the max invaders possible
+		var numberOfFloors = Object.keys(this.game.floors).length;
+		this.maxInvaders = 1 + (numberOfFloors / 3) + (this.currencyTotal / 1000) + this.game.challenge;
 		if (Object.keys(this.game.invaders).length > this.maxInvaders) return false;
+		
 		// If not specified, then find a random invader type
 		if (typeof invaderTypeId !== 'numeric') {
 			invaderTypeId = this.roll1d(this.data.invaders.length) - 1;
 		}
 		var invaderType = this.data.invaders[invaderTypeId];
+		
 		// Add invader to game data
 		this.game.invaderKeyCounter++;
-		var newKey = this.game.invaderKeyCounter.toString();
+		var newKey = "I" + this.game.invaderKeyCounter.toString();
 		this.game.invaders[newKey] = {
 			"invaderTypeId" : invaderTypeId
 			,"$elt" : {}
 			,"facing" : "left"
 			,"x" : 2000
 			,"y" : 0
-			,"speedX" : this.getRandomSpeed()
-			,"speedY" : 0
-			,"floorKey" : "0"
+			,"locomotionVelX" : this.getRandomVelocity("left")
+			,"locomotionVelY" : 0
+			,"externalVelX" : 0
+			,"externalVelY" : 0			
+			,"floorKey" : "F0"
 			,"isOutside" : true
 			,"hp"		: invaderType.hitPoints
 			,"isDead"	: false
@@ -571,15 +625,26 @@ var PFGameClass = function ()
 		console.log("Adding invader, key = " + newKey + ", invaderTypeId = " + invaderTypeId); 
 		
 		// Invader always starts on the base floor
-		this.game.floors["0"].invaderKeyArray.push(newKey);
+		this.game.floors["F0"].invaderKeyArray.push(newKey);
 		this.populateTower();
 		
 		return true;		
 	}	
 	
+	//=============================================== MOVEMENT ========================
+	
 	this.getRandomSpeed = function () {
 		return (0.25 + (this.roll1d(20) / 10));
 	}
+	this.getRandomVelocity = function (facing) {
+		if (typeof facing === 'string') {
+			var dir = (facing == "left") ? -1 : 1;
+		} else {
+			var dir = (this.roll1d(2) == 2) ? -1 : 1;
+		}
+		return (dir * this.getRandomSpeed());
+	}
+	
 	
 	this.moveGoons = function ()
 	{
@@ -596,6 +661,13 @@ var PFGameClass = function ()
 			var invader = this.game.invaders[invaderKey];
 			var invaderType = this.data.invaders[invader.invaderTypeId];
 			this.moveToon(invader, invaderType);
+			// Special invader stuff...
+			//console.log(invaderType.hitPoints - invader.hp);
+			//if ((invaderType.hitPoints - invader.hp) < 5) {
+				if (Math.abs(88 - invader.x) < 2) {
+					this.toonUseStairs(invader, invaderKey);
+				}
+			//}
 		}
 	}
 	
@@ -603,39 +675,108 @@ var PFGameClass = function ()
 	{
 		var toonWidth = toon.$elt.width();
 		var maxX = this.floorWidth - toonWidth;
-		
-		if (toon.facing == "left") {
-			toon.x -= toon.speedX;
-			toon.$elt.addClass("leftFacing").removeClass("rightFacing");
-		} else if (toon.facing == "right") {
-			toon.x += toon.speedX;
-			toon.$elt.addClass("rightFacing").removeClass("leftFacing");
+		//var toonMidX = toon.x + (toonWidth/2);
+		var velX = 0, velY = 0;
+		var isOnGround = (toon.y <= 0);
+		var weightMultiplier = toonType.weightMultiplier;
+		// Handle locomotion based on life/death
+		if (toon.isDead) {
+			weightMultiplier = 1;
+			if (toon.locomotionVelX != 0) {
+				toon.externalVelX += toon.locomotionVelX;
+				toon.locomotionVelX = 0;
+			}
+			if (toon.locomotionVelY != 0) {
+				toon.externalVelY += (toon.locomotionVelY / 2);
+				toon.locomotionVelY = 0;
+			}
+		} else { 				// If alive and moving, then move and hop
+			if (isOnGround && toon.locomotionVelX != 0) toon.externalVelY += 1.5;
 		}
-		if (toon.x <= 0) {
+		// Ground Friction
+		if (isOnGround && toon.externalVelX != 0) {
+			toon.externalVelX = toon.externalVelX * 0.95;
+			if (toon.externalVelX < 0.05) toon.externalVelX = 0;
+		}
+		// Gravity
+		toon.externalVelY -= (0.2 * weightMultiplier);
+		// New Location based on velocity
+		toon.x += (toon.locomotionVelX + toon.externalVelX);
+		toon.y += (toon.locomotionVelY + toon.externalVelY);
+		
+		this.updateToonFacing(toon);
+		
+		// Check boundaries X
+		if (toon.x <= 0) {					// Left Edge
 			toon.x = 0;
-			toon.facing = "right";
-			toon.speedX = this.getRandomSpeed();
-		} else if (toon.x >= maxX) {
+			this.turnToon(toon, "right");
+			toon.locomotionVelX = this.getRandomSpeed();
+		} else if (toon.x >= maxX) {		// Right Edge
 			if (!toon.isOutside) {
 				toon.x = maxX;
-				toon.facing = "left";
-				toon.speedX = this.getRandomSpeed();
+				this.turnToon(toon, "left");
+				toon.locomotionVelX = -1 * this.getRandomSpeed();
 			}
-		} else {
+		} else {							// Somewhere Inside
 			toon.isOutside = false;
 		}
-		if (toon.isDead) {
-			toon.speedX -= 1;
-			if (toon.speedX < 0) toon.speedX = 0;
-		} else { 	// If alive, then hop
-			if (toon.y <= 0) toon.speedY = 1;
+		// Check boundaries Y
+		if (toon.y <= 0) {
+			toon.y = 0;
 		}
-		toon.y += toon.speedY;
-		if (toon.y <= 0) toon.y = 0;
-		toon.speedY -= (0.1 * toonType.weightMultiplier); // Gravity
-		
+		// Update Position
 		toon.$elt.css({ "left" : toon.x, "bottom" : toon.y });		
 	}
+	
+	this.turnToon = function (toon, facing) 
+	{
+		if (typeof facing === 'undefined') {
+			toon.facing = (toon.facing == "left") ? "right" : "left";
+		} else {
+			toon.facing = facing;
+		}
+		this.updateToonFacing(toon);
+	}
+	
+	this.updateToonFacing = function (toon)
+	{	
+		if (toon.facing == "left") {
+			toon.$elt.addClass("leftFacing").removeClass("rightFacing");
+		} else if (toon.facing == "right") {
+			toon.$elt.addClass("rightFacing").removeClass("leftFacing");
+		}	
+	}
+	
+	this.toonUseStairs = function (toon, toonKey, isUp)
+	{
+		var o = this;
+		if (typeof isUp === 'undefined') isUp = (this.roll1d(2) == 1) ? true : false;
+		var farr = this.game.floorArray;
+		var currentFloor = this.game.floors[toon.floorKey];
+		if (farr.length <= 1) return false;
+		var floorIndex = $.inArray(toon.floorKey, farr);
+		if (floorIndex == -1) return false; // shouldn't happen
+		if (isUp) {						
+			if (floorIndex == 0) return false;
+			var newFloorKey = farr[floorIndex - 1];
+		} else {						
+			if (floorIndex == (farr.length - 1)) return false;
+			var newFloorKey = farr[floorIndex + 1];
+		}
+		// Check for cooldown to prevent jumping through stairs too often
+		if (typeof toon.stairsCooldown === "undefined") toon.stairsCooldown = 0;
+		else toon.stairsCooldown--;
+		if (toon.stairsCooldown > 0) return false;
+		// Made it this far, now go to new floor
+		//toon.locomotionVelX = 0;
+		
+		o.removeToonFromFloor(toon, toonKey, function(){
+			o.addToonToFloor(toon, toonKey, newFloorKey);
+			toon.stairsCooldown = 5;
+			toon.externalVelY += 4;
+		});
+		return true;
+	}	
 	
 	this.doCombatRound = function ()
 	{
@@ -648,13 +789,13 @@ var PFGameClass = function ()
 			for (var i in floor.invaderKeyArray) {
 				var invKey = floor.invaderKeyArray[i];
 				var invader = this.game.invaders[invKey];
-				if (!invader.isDead) {
+				if (typeof invader !== "undefined" && !invader.isDead) {
 					var invaderType = this.data.invaders[invader.invaderTypeId];
 					// Loop through all goons on this floor to see if there are any in melee range
 					for (var g in floor.goonKeyArray) {
 						var goonKey = floor.goonKeyArray[g];
 						var goon = this.game.goons[goonKey];
-						if (!goon.isDead) {
+						if (typeof goon !== "undefined" && !goon.isDead) {
 							var goonType = this.data.goons[goon.goonTypeId];
 							var dist = o.getDistanceBetween(goon.x, goon.y, invader.x, invader.y);
 							if (dist < o.meleeRange) {
@@ -691,6 +832,7 @@ var PFGameClass = function ()
 		}, 1000, function(){
 			$dmg.remove();
 		});
+		// DEAD!
 		if (toon.hp <= 0) {
 			if (typeof toon.isImmortal !== 'boolean') toon.isImmortal = false;
 			if (toon.isImmortal) {
@@ -705,6 +847,7 @@ var PFGameClass = function ()
 					this.total.gold += this.roll1d(10);
 				}
 			}
+			toon.externalVelY = 6;
 			toon.isDead = true;
 			toon.$elt.addClass("dead");
 		}
@@ -719,12 +862,7 @@ var PFGameClass = function ()
 				invader.decay--;
 				if (invader.decay < 0) {
 					console.log("Clearing Invader " + invaderKey);
-					invader.$elt.fadeOut(500, function(){
-						invader.$elt.remove();
-					});
-					var floor = this.game.floors[invader.floorKey];
-					var keyPos = $.inArray(invaderKey, floor.invaderKeyArray);
-					floor.invaderKeyArray.splice(keyPos, 1);
+					o.removeToonFromFloor(invader, invaderKey);
 					delete this.game.invaders[invaderKey];
 				}
 			}
@@ -751,19 +889,41 @@ var PFGameClass = function ()
 						}(goon)); 
 					} else { // normal delete
 						console.log("Deleting Goon " + goonKey);
-						(function(g){
-							g.$elt.fadeOut(500, function(){
-								g.$elt.remove();
-							});
-						}(goon));
-						var floor = this.game.floors[goon.floorKey];
-						var keyPos = $.inArray(goonKey, floor.goonKeyArray);
-						floor.goonKeyArray.splice(keyPos, 1);
+						o.removeToonFromFloor(goon, goonKey);
 						delete this.game.goons[goonKey];
 					}
 				}
 			}
 		}		
+	}
+	
+	this.removeToonFromFloor = function (toon, toonKey, callback)
+	{
+		var floor = this.game.floors[toon.floorKey];
+		var arrayName = (toon.isGoon) ? "goonKeyArray" : "invaderKeyArray";
+		var keyPos = $.inArray(toonKey, floor[arrayName]);
+		floor[arrayName].splice(keyPos, 1);
+		toon.$elt.fadeOut(500, function(){
+			toon.$elt.remove();
+			if (typeof callback === "function") callback();
+		});
+	}
+	
+	this.addToonToFloor = function (toon, toonKey, newFloorKey)
+	{
+		toon.floorKey = newFloorKey;
+		var newFloor = this.game.floors[newFloorKey];
+		if (toon.isGoon) {
+			var arrayName = "goonKeyArray";
+			var toonType = this.data.goons[toon.goonTypeId];
+		} else {
+			var arrayName = "invaderKeyArray";
+			var toonType = this.data.invaders[toon.invaderTypeId];
+		}
+		newFloor[arrayName].push(toonKey);
+		// Now add the element to the floor so we don't have to refresh all toons in the DOM
+		var $floor = this.$floors.find('.floorKey' + newFloorKey);
+		this.setToon$Elt(toon, toonType).hide().appendTo($floor).fadeIn(200);	
 	}
 	
 	
@@ -841,7 +1001,11 @@ var PFGameClass = function ()
 		return n.toLocaleString('en');
 	}
 	
-
+	this.getProperCase = function(t) {	
+		return t.replace(/\w\S*/g, function(txt){
+			return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+		});
+	}
 	
 
 	

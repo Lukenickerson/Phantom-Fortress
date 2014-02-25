@@ -141,7 +141,7 @@
 		,{
 			"name"		: "Ghost"
 			,"isUndead"	: true
-			,"weightMultiplier" : 0.2
+			,"weightMultiplier" : 0.15
 			,"forSale"	: true
 			,"cost" : {
 				"souls" : 10
@@ -163,7 +163,7 @@
 		,{
 			"name"		: "Poison Ghost"
 			,"isUndead"	: true
-			,"weightMultiplier" : 0.15
+			,"weightMultiplier" : 0.1
 			,"forSale"	: true
 			,"cost" : {
 				"souls" : 30

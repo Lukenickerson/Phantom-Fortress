@@ -56,7 +56,7 @@ var PFGameClass = function ()
 			"G0" : {		// The Phantom Lord
 				"goonTypeId" : 0
 				,"$elt" : {}
-				,"facing" : "left"
+				,"facing" : "right"
 				,"locomotionVelX" : 0.1
 				,"locomotionVelY" : 0
 				,"externalVelX" : 0

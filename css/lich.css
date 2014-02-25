@@ -114,7 +114,8 @@ footer a {
 	display: none;
 	position: fixed; z-index: 100;
 	top: 0; left: 0;
-	width: 92%; height: 92%;
+	max-width: 92%; 
+	max-height: 92%;
 	margin: 1% 1%;
 	padding: 3%;
 	border-radius: 1em;

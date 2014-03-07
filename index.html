@@ -12,7 +12,7 @@
 
 	<header>
 		<h1>Phantom Fortress</h1>
-		<div class="subTitle">ver 0.4</div>
+		<div class="subTitle">ver 0.5</div>
 	</header>
 	
 	<section id="intro">
@@ -22,20 +22,22 @@
 	<section id="controls">
 		<div id="currency">
 			<ul>
-				<li><span class="currNum goldNum"></span><span class="currencyIcon iconGold">Gold</span></li>
-				<li><span class="currNum soulsNum"></span><span class="currencyIcon iconSouls">Soul Shards</span></li>
-				<li><span class="currNum stoneNum"></span><span class="currencyIcon iconStone">Stone</span></li>
-				<li><span class="currNum oreNum"></span><span class="currencyIcon iconOre">Ore</span></li>
-				<li><span class="currNum arcaneNum"></span><span class="currencyIcon iconArcane">Arcane Knowledge</span></li>
+				<li><span class="currNum goldNum"></span><span class="currencyIcon iconGold"><span>Gold</span></span></li>
+				<li><span class="currNum soulsNum"></span><span class="currencyIcon iconSouls"><span>Soul Shards</span></span></li>
+				<li><span class="currNum arcaneNum"></span><span class="currencyIcon iconArcane"><span>Arcane Knowledge</span></span></li>
 				<!---<li><span class="currNum foodNum"></span><span class="currencyIcon iconFood">Food</span></li>--->
+				<li><span class="currNum stoneNum"></span><span class="currencyIcon iconStone"><span>Stone</span></span></li>
+				<li><span class="currNum oreNum"></span><span class="currencyIcon iconOre"><span>Ore</span></span></li>				
+				<li><span class="currNum floorNum"></span><span class="currencyIcon iconFloors"><span>Floors</span></span></li>
 			</ul>
 		</div>
+		<button type="button" class="openSettings">Settings</button>
 		<div id="hand">
 			<span class="handHoldingName">Empty</span>
 		</div>
 	</section>
 	
-	<section id="tower">
+	<section id="tower" class="zoom0" data-zoom="0">
 		<div id="sky" class="towerLayer">
 		</div>
 		<div id="ground" class="towerLayer">
@@ -56,13 +58,22 @@
 	
 	<section id="floorInfo" class="popUp">
 		<h1 class="floorName"><!--- Floor name ---></h1>
-		<div class="floorDescription"><!--- Floor description ---></div>
 		<div class="floorAvailability">
 			<h2>Positions Available</h2>
 			<ul>
 				<!--- List of free positions --->
 			</ul>
+		</div>		
+		<div class="floorDescription"><!--- Floor description ---></div>
+		<div class="menu">
+			<button type="button" class="toggleFloorDescription">Info</button>
+			<button type="button" class="floorPurchase NA">Rebuild</button>
+			<button type="button" class="viewAssignWorker">Add Worker</button>
+			<button type="button" class="NA">Banish Workers</button>
+			<button type="button" class="NA">Shut Down</button>
 		</div>
+		
+
 		<div class="floorWorkers">
 			<h2>Workers</h2>
 			<ul>
@@ -101,7 +112,10 @@
 	
 	
 	<section id="settings" class="popUp">
-	
+		<h1>Zoom</h1>
+		<button type="button" class="zoomOut">Zoom Out</button>
+		<button type="button" class="zoomIn">Zoom In</button>
+		<button type="button" class="closePopUp">X</button>
 	</section>	
 	
 	

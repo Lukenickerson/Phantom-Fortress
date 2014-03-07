@@ -390,6 +390,7 @@ li.viewAssignWorker:hover {
 	
 	#floors > div.selected {
 		border: solid 0.2em white;
+		box-shadow: inset 0 0 2em white, 0 0 3em white;
 	}
 
 .floorTop
@@ -404,7 +405,8 @@ li.viewAssignWorker:hover {
 	font-size: 150%;
 	text-align: center;
 	font-family: 'Original Surfer', cursive;
-	color: rgba(255,255,255,0.15);
+	color: rgba(255,255,255,0.0);
+	transition: all 0.4s ease-in-out;
 }
 .zoom1 .floorEdge {	font-size: 113%; }
 .zoom2 .floorEdge {	font-size: 75%; }
@@ -416,6 +418,7 @@ li.viewAssignWorker:hover {
 	margin: -1px -1px -1px -1px;
 	*/
 	background-color: rgba(255,255,255,0.1);
+	box-shadow: 0 0 4em rgba(255,255,255,0.3);
 	text-shadow: 0 0 0.5em black;
 	color: rgba(255,255,255,0.75);
 }
@@ -542,6 +545,11 @@ li.viewAssignWorker:hover {
 	color: white;
 	text-align: center;
 	border-radius: 1em;
+	box-shadow: 0 0 1em red;
+}
+.goonDamage {
+	background-color: #313;
+	box-shadow: 0 0 1em #313;
 }
 
 

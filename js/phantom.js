@@ -906,6 +906,7 @@ var PFGameClass = function ()
 	
 	this.damageToon = function (toon, damage) 
 	{
+		damage += this.roll1d(2) - 1; // bonus random damage
 		toon.hp -= damage;
 		var $dmg = $('<div class="damage">' + damage + '</div>');
 		var toonPos = toon.$elt.position();
@@ -915,6 +916,7 @@ var PFGameClass = function ()
 			,"top" : toonPos.top
 		});
 		toon.$elt.closest('.floor').append($dmg);
+		if (toon.isGoon) $dmg.addClass("goonDamage");
 		$dmg.animate({
 			"opacity" : 0
 			,"bottom" : 0
@@ -1026,6 +1028,7 @@ var PFGameClass = function ()
 	}
 	
 	
+	//=========================================================================
 	//============================================ CURRENCY / PILE
 	
 	this.displayTotals = function ()
@@ -1073,6 +1076,12 @@ var PFGameClass = function ()
 						if (numOfWorkers > 0) {
 							var workersAssignedToThisResource = 1;
 							var naturalProductionPerSecond = workersAssignedToThisResource;
+							// If this floor outputs this resource already, then get a bonus
+							if (typeof floorType.output === "object") {
+								if (floorType.output[currency] > 0) {
+									naturalProductionPerSecond += floorType.output[currency];
+								}
+							}
 							this.perSecond[currency] += naturalProductionPerSecond;
 							floor.naturalResources[currency] -= naturalProductionPerSecond;
 							numOfWorkers -= workersAssignedToThisResource;

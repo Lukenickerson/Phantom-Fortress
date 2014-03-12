@@ -1121,9 +1121,9 @@ var PFGameClass = function ()
 			if (toon.isUndead) {
 				this.total.souls += this.roll1d(9);
 			} else {
-				this.total.souls += 10;
+				this.total.souls += 2 + this.roll1d(8);
 				if (!toon.isGoon) {
-					this.total.gold += this.roll1d(8);
+					this.total.gold += this.roll1d(6);
 				}		
 			}
 			toon.externalVelX = this.getRandomVelocity();

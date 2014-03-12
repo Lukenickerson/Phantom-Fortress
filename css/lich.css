@@ -239,35 +239,42 @@ footer a {
 .buyFloor:nth-child(odd) {
 	clear: left;
 }
+/*
 .buyFloor:after {
 	content: "click to buy floor";
-}
-.buyFloor.canAfford:hover {
-	background-color: rgba(255,255,255,0.3);
-}
-.buyFloor.cannotAfford:hover {
-	background-color: rgba(50,0,0,0.4);
-}
-.buyFloor .floorName {
-	display: block;
-	margin: 0 1em 1em 0;
-	font-family: 'Original Surfer', cursive;
-	font-size: 120%;
-	float: left;
-	width: 50%;
-	min-width: 8em;
-}
-.floorPreview {
-	width: 120px; height: 32px; 
-	float: right;
-}
-.buyFloor .cost {
-	display: block;
-	float: left;
-	clear: left;
-}
-	.buyFloor.cannotAfford .cost {
+} */
+	.buyFloor.canAfford:hover {
+		background-color: rgba(255,255,255,0.3);
+	}
+	.buyFloor.cannotAfford:hover {
+		background-color: rgba(50,0,0,0.4);
+	}
+	.buyFloor .floorName {
+		display: block;
+		margin: 0 1em 1em 0;
+		font-family: 'Original Surfer', cursive;
+		font-size: 120%;
+		float: left;
+		width: 50%;
+		min-width: 8em;
+	}
+	.buyFloor .currNum {
+		font-size: 120%;
+	}
+	.floorPreview {
+		width: 120px; height: 32px; 
+		float: right;
+	}
+	.buyFloor .cost {
+		display: block;
+		float: left;
+		clear: left;
+	}
+	.buyFloor.cannotAfford .currNum {
 		color: red;
+	}
+	.buyFloor.cannotAfford .floorPreview {
+		opacity: 0.5;
 	}
 
 .buyFloor .currencyIcon {

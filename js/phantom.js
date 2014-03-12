@@ -40,7 +40,8 @@ var PFGameClass = function ()
 		"upgrades" 	: {}
 		,"groups"	: {}
 		*/
-	};	
+	};
+	this.version = "0.54";
 	//==== Game Data
 	this.game = {
 		"floorKeyCounter" : 0
@@ -57,7 +58,8 @@ var PFGameClass = function ()
 		,"goonKeyCounter" : 0
 		,"goons" : {
 			"G0" : {		// The Phantom Lord
-				"goonTypeId" 	: 0
+				"key"			: "G0"
+				,"goonTypeId" 	: 0
 				,"$elt" 		: {}
 				,"facing" 		: "right"
 				,"locomotionVelX" : 0.1
@@ -120,7 +122,7 @@ var PFGameClass = function ()
 	this.totalFloorCount = 0;
 	this.maxInvaders = 1;
 	this.total = {
-		"gold"		: 200
+		"gold"		: 300
 		,"souls" 	: 40
 		,"arcane" 	: 0
 		,"stone"	: 0
@@ -159,23 +161,7 @@ var PFGameClass = function ()
 		o.total.stone 	+= (o.perSecond.stone * o.secondsPerLoop);
 		o.total.ore 	+= (o.perSecond.ore * o.secondsPerLoop);
 		o.total.food 	+= (o.perSecond.food * o.secondsPerLoop);
-		o.currencyTotal = o.total.gold + o.total.souls + o.total.arcane 
-			+ o.total.stone + o.total.ore + o.total.food;
-
-		if (o.total.gold < 0) 	o.total.gold = 0;
-		if (o.total.souls < 0) 	o.total.souls = 0;
-		if (o.total.arcane < 0) o.total.arcane = 0;
-		if (o.total.stone < 0) 	o.total.stone = 0;
-		if (o.total.ore < 0) 	o.total.ore = 0;
-		if (o.total.food < 0) 	o.total.food = 0;
-		/*
-		o.displayNumber(o.total.indMoney, o.$indMoneyVal);
-		o.displayNumber(o.total.polMoney, o.$polMoneyVal);
-		o.displayNumber(o.total.medMoney, o.$medMoneyVal);
-		o.displayNumber(o.total.votes, o.$votesVal);
-		o.displayNumber(o.total.minds, o.$mindsVal);
-		*/
-		o.displayTotals();
+		
 		o.moveGoons();
 		o.moveInvaders();
 		
@@ -183,6 +169,7 @@ var PFGameClass = function ()
 		if ((o.loopIteration % o.loopModulusAction) == 0) {
 			//console.log("Combat Round ~0.5/second");
 			o.doCombatRound();
+			o.displayTotals();
 		}
 		
 		// Update these only every second or so... 
@@ -206,7 +193,7 @@ var PFGameClass = function ()
 
 		} else if (((o.loopIteration + 2) % o.loopModulus) == 0) {
 			
-			if (o.roll1d(30) == 1) {
+			if (o.roll1d(15) == 1) {
 				o.addInvader();
 			}
 			
@@ -214,6 +201,17 @@ var PFGameClass = function ()
 		} else if (((o.loopIteration + 4) % o.loopModulus) == 0) {
 			
 			o.clearDead();
+			
+			if (o.total.gold < 0) 	o.total.gold = 0;
+			if (o.total.souls < 0) 	o.total.souls = 0;
+			if (o.total.arcane < 0) o.total.arcane = 0;
+			if (o.total.stone < 0) 	o.total.stone = 0;
+			if (o.total.ore < 0) 	o.total.ore = 0;
+			if (o.total.food < 0) 	o.total.food = 0;
+
+			// note: currency total won't be exactly up-to-date, only updated ~every second.
+			o.currencyTotal = o.total.gold + o.total.souls + o.total.arcane 
+				+ o.total.stone + o.total.ore + o.total.food;			
 		}
 		
 	
@@ -223,7 +221,8 @@ var PFGameClass = function ()
 				o.loopTimer = window.setTimeout(function(){
 					o.loop();
 				}, o.loopDelay); 
-				
+			} else {
+				o.notify("Game paused");
 			}
 		}
 	}
@@ -242,7 +241,7 @@ var PFGameClass = function ()
 
 	//=============================================== TOWER MAP CALC, REFRESH, DISPLAY
 	
-	this.drawTower = function ()
+	this.drawTower = function (isAnimated)
 	{
 		console.log("Drawing Tower");
 		//console.log(this.data.floors);	console.log(this.game.floors);
@@ -264,10 +263,10 @@ var PFGameClass = function ()
 				for (var n in floorObj.naturalResources) {
 					var amount = floorObj.naturalResources[n];
 					if (amount > 0) {
-						n = this.getProperCase(n);
-						h += '<span class="nrNum nr' + n + 'Num">' + amount + '</span>'
-							+ '<span class="currencyIcon icon' + n + '">'
-							+ '<span>' + n + '</span></span>';
+						var properN = this.getProperCase(n);
+						h += '<span class="nrNum nr' + properN + 'Num">' + amount + '</span>'
+							+ '<span class="currencyIcon icon_' + n + '">'
+							+ '<span>' + properN + '</span></span>';
 					}
 				}
 				h += '</div>';
@@ -298,7 +297,11 @@ var PFGameClass = function ()
 		// Get full height and set this to the tower height
 		var totalFloorsHeight = ((this.game.floorArray.length + 2) * this.floorHeight);
 		this.$floors.css("height", totalFloorsHeight);
-		this.$tower.css("height", (totalFloorsHeight + 400 )); // 
+		if (typeof isAnimated === "boolean" && isAnimated) {
+			this.$tower.css("height", 0).animate({ "height" : (totalFloorsHeight + 400 ) }, 3000);
+		} else {
+			this.$tower.css("height", (totalFloorsHeight + 400 )); // 
+		}
 		
 		// Next step: populate the tower with things...
 		this.populateTower();
@@ -341,21 +344,33 @@ var PFGameClass = function ()
 	
 	this.setToon$Elt = function (toon, toonType) 
 	{
-		var toonMainType = (toon.isGoon) ? "goon" : "invader";
+		//console.log(toon);
+		//var toonMainType = (toon.isGoon) ? "goon" : "invader";
+		if (toon.isGoon) {
+			var toonMainType = "goon";
+			var toonKey = toon.key;
+		} else {
+			var toonMainType = "invader";
+			var toonKey = toon.key;		
+		}
 		//console.log("Setting Toon Element : " + toonMainType);
-		var toonTypeName = toonType.name.replace(/\s+/g, ''); // Remove spaces
+		var toonTypeName = this.removeSpaces(toonType.name);
 		var h = '<div class="'
 			+ ' ' + toonMainType
 			+ ' ' + toon.facing + 'Facing'
 			+ ' ' + toonMainType + '_' + toonTypeName 
 			+ ((toon.isDead) ? ' dead ' : '')
-			+ '">'
+			+ '" '
+			+ ' data-' + toonMainType + 'key="' + toonKey + '">'
 			+ toonType.name
 			+ '</div>';
 		toon.$elt = $(h);
 		return toon.$elt;
 	}
 	
+	this.removeSpaces = function (t) {
+		return t.replace(/\s+/g, ''); // Remove spaces
+	}
 	
 	this.calculateFloorsCounts = function ()
 	{
@@ -380,6 +395,20 @@ var PFGameClass = function ()
 		this.topFloorsCount = t;
 	}
 	
+	this.getCurrencyHtml = function (cost)
+	{
+		//console.log("getCurrencyHtml..."); console.log(JSON.stringify(cost));
+		var h = "";
+		for (var c in cost) {
+			var currencyLongName = this.currencyTypeLongNames[c];
+			h += ' <span class="cost">' 
+				+ cost[c] 
+				+ '</span><span class="currencyIcon icon_' + c + '">'
+				+ currencyLongName + '</span>';
+		}
+		return h;
+	}
+	
 	this.selectFloor = function (floorKey) 
 	{
 		this.selectedFloorKey = floorKey;
@@ -396,22 +425,23 @@ var PFGameClass = function ()
 		this.$floors.children('div').removeClass("selected");
 	}
 
-	this.viewFloor = function (floorKey) 
+	this.viewFloor = function (floorKey, top, left) 
 	{
 		var floorObj = this.game.floors[floorKey];
 		var floorTypeObj = this.data.floors[floorObj.floorTypeId];
-		var $floorAvailability = this.$floorInfo.find('.floorAvailability').hide();
-		var $floorWorkers = this.$floorInfo.find('.floorWorkers').hide();
-		var $floorWorkers = this.$floorInfo.find('.floorWorkers').hide();
-		var $floorNR = this.$floorInfo.find('.naturalResources').hide();
+		var $floorAvailability = this.$floorMenu.find('.floorAvailability').hide();
+		var $floorWorkers = this.$floorMenu.find('.floorWorkers');
+		var $floorNR = this.$floorMenu.find('.naturalResources');
 		var availHtml = "", workersHtml = "", nrHtml = "";
-	
+		var workerCount = floorObj.goonKeyArray.length;
 		if (typeof floorTypeObj.workerSpaces === 'undefined') floorTypeObj.workerSpaces = 0;
+		
+		$('.workerCount').html( workerCount + "/" + floorTypeObj.workerSpaces);
 		if (floorTypeObj.workerSpaces == 0) {
 			availHtml = '<p>This floor does not have space for workers.</p>';
 		} else {
 			if (typeof floorObj.goonKeyArray === 'undefined') floorObj.goonKeyArray = [];
-			var workerCount = floorObj.goonKeyArray.length;
+			
 			var availCount = floorTypeObj.workerSpaces - workerCount;
 			//console.log("Worker Count: " + workerCount + ", Available Count: " + availCount);
 			
@@ -429,13 +459,13 @@ var PFGameClass = function ()
 		}
 		//console.log(workersHtml);
 		
-		this.$floorInfo.find('h1.floorName').html(floorTypeObj.name);
-		this.$floorInfo.find('.floorDescription').html(floorTypeObj.description);
+		this.$floorMenu.find('h1.floorName').html(floorTypeObj.name);
+		this.$floorMenu.find('.floorDescription').html(floorTypeObj.description);
 		if (availHtml != "") {
-			$floorAvailability.fadeIn().children('ul').html(availHtml);
+			$floorAvailability.children('ul').html(availHtml);
 		}
 		if (workersHtml != "") {
-			$floorWorkers.fadeIn().children('ul').html(workersHtml);
+			$floorWorkers.children('ul').html(workersHtml);
 		}
 		console.log("floorObj.naturalResources");
 		console.log(floorObj.naturalResources);
@@ -443,44 +473,57 @@ var PFGameClass = function ()
 			nrHtml += '<li>' + floorObj.naturalResources[n] + ' ' + n + '</li>';
 		}
 		if (nrHtml != "") {
-			$floorNR.fadeIn().children('ul').html( nrHtml );
+			$floorNR.children('ul').html( nrHtml );
 		}
-		this.$floorInfo.slideDown(200);
+		this.$floorMenu.css({"top" : top, "left" : left}).slideDown(200);
 	}
+
 	
-	this.refreshFloorPurchase = function (isTop) 
+	this.viewFloorPurchase = function (top) 
 	{
 		var o = this;
-		//var h = "";
+		var floorKey = o.selectedFloorKey;
+		if (floorKey == "F0") {
+			o.notify("Cannot rebuild the base floor.");
+			return;
+		}
+		var h = "";
 		var $floorList = this.$floorPurchase.find("ul").empty();
+		var floorType = {};
+		var isTop = false;
+		var cost = {};
+		var affordableClass = "";
+		var $li = {};
 		// Loop over all floor types
-		for (var floorTypeId in this.data.floors) {
-			var floorType = this.data.floors[floorTypeId];
+		for (var floorTypeId in o.data.floors) {
+			floorType = o.data.floors[floorTypeId];
+			isTop = o.isFloorOnTop(floorKey);
 			if (!floorType.forSale) {
 				// Not for sale
 			} else if (isTop && floorType.isBottomOnly || !isTop && floorType.isTopOnly) {
 				// Cannot build here
 			} else {
-				var cost = this.getFloorCost(isTop, floorType);
-				var affordableClass = (o.canAfford(cost)) ? "canAfford" : "cannotAfford";
-				var h = '<li class="buyFloor ' + affordableClass + '" '
+				cost = o.getFloorCost(floorType);
+				affordableClass = (o.canAfford(cost)) ? "canAfford" : "cannotAfford";
+				h = '<li class="buyFloor ' + affordableClass + '" '
 					+ ' data-floortypeid="' + floorTypeId + '"'
 					+ ' data-istop="' + isTop + '"'
 					+ '>'
 					+ '<span class="floorName">' + floorType.name + '</span>'
-					+ ' <span class="cost">' + cost.gold + '</span><span class="currencyIcon iconGold">Gold</span>';
-				if (cost.stone > 0) {
-					h += ' <span class="cost">' + cost.stone + '</span><span class="currencyIcon iconStone">Stone</span>';
-				}
+					// *** replace space with ...?
+					+ '<div class="floorPreview floor_' + floorType.name + '"></div>';
+				h += o.getCurrencyHtml(cost);
+
 				h += ' <span class="floorDescription">' + floorType.description + '</span>';
 					//+ ' <button type="button" class="buyFloor">Buy Floor</button>'
 					+ '</li>';
-				var $li = $(h);
+				$li = $(h);
+				// Add click event for purchasing
 				$li.click(function(e){
 					var $this = $(this);
 					var floorTypeId = $this.data("floortypeid");
 					var isTop = $this.data("istop");
-					o.buyFloor(isTop, floorTypeId);
+					o.buyFloor(floorKey, floorTypeId);
 					e.preventDefault();
 				});
 				$li.appendTo( $floorList );
@@ -489,8 +532,8 @@ var PFGameClass = function ()
 		//h = '<ul class="blockList">' + h + '</ul>';
 		//h += '<button type="button" class="closePopUp">X</button>';
 		//this.$floorPurchase.find("ul").html(h);
-		this.$floorPurchase
-			.css({ "left": 0, "opacity" : 1 })
+		o.$floorPurchase
+			.css({ "left": 0, "top" : top, "opacity" : 1 })
 			.fadeIn(100);
 	}
 	
@@ -501,14 +544,57 @@ var PFGameClass = function ()
 		
 	}
 	
-	this.buyFloor = function (isTop, floorTypeId) 
+	this.buyFloor = function (floorKey, floorTypeId) 
 	{
 		var o = this;
 		var floorType = o.data.floors[floorTypeId];
-		var cost = o.getFloorCost(isTop, floorType);
+		var cost = o.getFloorCost(floorType);
 		if (o.canAfford(cost)) {
-			o.eraseCurrency("gold", cost.gold);
-			o.eraseCurrency("stone", cost.stone);
+			for (var c in cost) {
+				o.eraseCurrency(c, cost[c]);
+			}
+			o.game.floors[floorKey].floorTypeId = floorTypeId;
+			console.log("Swapping floor, key = " + floorKey + ", floorTypeId = " + floorTypeId); 
+			o.drawTower();
+		} else {
+			o.notify("You cannot afford this floor yet.");
+		}
+		o.$floorPurchase.animate({
+			"left" : 3000
+			,"opacity" : 0
+		}, 500, function(){
+			o.$floorPurchase.hide();
+		});
+	}
+	
+	this.viewBuilder = function (isTop, top, left) 
+	{
+		var o = this;
+		// *** get cost
+		//var h = "[show cost] Build Yes / No?";
+		var floorTypeId = (isTop) ? 1 : 2; // HARD CODED: 1=Empty, 2=Tunnel
+		var floorType = o.data.floors[floorTypeId];
+		// Add event for clicking "Yes, build"
+		o.$floorBuilder.find('.buildNewFloor').off("click").on("click", function(e){
+			o.buildNewFloor(floorTypeId, isTop);
+			o.$floorBuilder.fadeOut(200);
+		});
+		// Add cost info
+		var floorCost = o.getFloorCost(floorType, true, isTop);
+		o.$floorBuilder.find('.cost').html( o.getCurrencyHtml(floorCost) );
+		// Show builder pop-up
+		o.$floorBuilder.css({ "top" : top, "left" : left }).fadeIn(200);
+	}	
+	
+	this.buildNewFloor = function (floorTypeId, isTop) 
+	{
+		var o = this;
+		var floorType = o.data.floors[floorTypeId];
+		var cost = o.getFloorCost(floorType, true, isTop);
+		if (o.canAfford(cost)) {
+			for (var c in cost) {
+				o.eraseCurrency(c, cost[c]);
+			}
 			// Add floor to game data
 			o.game.floorKeyCounter++;
 			var newFloorKey = "F" + o.game.floorKeyCounter.toString();
@@ -524,12 +610,12 @@ var PFGameClass = function ()
 			} else {
 				o.game.floorArray.push(newFloorKey);
 				var nr = {
-					"stone" : 100 + (o.roll1d(6) * 50)
+					"stone" : 50 + (o.roll1d(9) * 50) // 100-500
 					//,"ore"	: 0
 					//,"gold"	: 0
 				};
-				if (o.roll1d(3) == 1) nr.ore = (o.roll1d(6) * 50);
-				if (o.roll1d(5) == 1) nr.gold = (o.roll1d(6) * 50);
+				if (o.roll1d(3) == 1) nr.ore = (o.roll1d(10) * 50); // 50 - 500
+				if (o.roll1d(5) == 1) nr.gold = (o.roll1d(6) * 50); // 50 - 300
 				o.game.floors[newFloorKey].naturalResources = nr;
 			}
 			//console.log(o.game.floors[newFloorKey]);
@@ -547,24 +633,51 @@ var PFGameClass = function ()
 		});
 	}
 	
-	this.getFloorCost = function (isTop, floorType)
+	this.getFloorCost = function (floorType, isNewFloor, isTop)
 	{
-		var stoneCost = 0;
+		var finalCost = {};
 		this.calculateFloorsCounts();
-		//console.log("isTop=" + isTop + ", " + this.topFloorsCount + ", " + this.bottomFloorsCount);
-		// Get cost based on distance from ground floor 
-		// *** ...and type of room
-		var floorCount = (isTop) ? this.topFloorsCount : this.bottomFloorsCount;
-		var goldCost = (100 * floorType.purchaseCostMultiplier);
-		goldCost = goldCost + (goldCost * 0.9 * floorCount);
-		if (isTop) { 
-			stoneCost = 20 + (40 * floorCount);
+		// Are we building a new floor?
+		if (typeof isNewFloor === 'boolean' && isNewFloor) {
+			this.calculateFloorsCounts();
+			//console.log("isTop=" + isTop + ", " + this.topFloorsCount + ", " + this.bottomFloorsCount);
+			// Get cost based on distance from ground floor 
+			var floorCount = (isTop) ? this.topFloorsCount : this.bottomFloorsCount;
+			var goldCost = floorType.cost.gold;
+			finalCost.gold = goldCost + (goldCost * 0.9 * floorCount);
+			if (isTop) { 
+				finalCost.stone = 100 + (40 * floorCount);
+			}
+		} else {
+		// Not building a new floor, just remodeling
+			finalCost = floorType.cost;
+			// Make it cost slightly more as the # of floors increases
+			// *** calibrate this
+			// *** maybe make it more expensive the more you have of each floor type
+			finalCost.gold += 10 * this.totalFloorCount;
 		}
-		return { "gold" : goldCost, "stone" : stoneCost };
+		return finalCost;
+	}
+	
+	this.isFloorOnTop = function (floorKey) 
+	{
+		var isTop = false;
+		var iterativeFloorTypeId = -1;
+		for (var i = 0; i < this.floorArray; i++) {
+			iterativeFloorKey = this.floorArray[i];
+			if (iterativeFloorKey == floorKey) {
+				return isTop;
+			} else if (iterativeFloorKey == "F0") {
+				isTop = true;
+				//return isTop; // safe to default to top?
+			}
+		}
+		//console.error("Floor " + floorKey + " not found");
+		return isTop;
 	}
 	
 	
-	
+	//=======================================================================\\
 	//============================================ TOONS: GOONZ & INVADERS
 	
 	this.viewGoon = function (goonKey) 
@@ -576,23 +689,24 @@ var PFGameClass = function ()
 		this.$goonInfo.slideDown(200);
 	}
 	
-	this.viewGoonAssignment = function (floorKey)
+	this.viewGoonAssignment = function (floorKey, top)
 	{
 		if (typeof floorKey === 'undefined') floorKey = this.selectedFloorKey;
 		console.log("View goons to assign to " + floorKey);
 		var h = ""
 		for (var goonId in this.data.goons) {
-			var goonTypeObj = this.data.goons[goonId];
-			if (goonTypeObj.forSale) {
-				h += '<li class="buyGoon"'
+			var goonType = this.data.goons[goonId];
+			if (goonType.forSale) {
+				var toonTypeNameSpaceless = this.removeSpaces(goonType.name);
+				h += '<li class="buyGoon goon_' + toonTypeNameSpaceless + '" '
 					+ ' data-floorkey="' + floorKey + '" '
 					+ ' data-goontypeid="' + goonId + '" '
 					+ '>'
-					+ goonTypeObj.name;
-				console.log(goonTypeObj);
-				for (var currency in goonTypeObj.cost) {
+					+ '<span class="goonName">' + goonType.name + '</span>';
+				console.log(goonType);
+				for (var currency in goonType.cost) {
 					// *** fix formatting here
-					h += ' ' + goonTypeObj.cost[currency];
+					h += ' ' + goonType.cost[currency];
 					h += ' ' + currency;
 				}
 
@@ -602,7 +716,7 @@ var PFGameClass = function ()
 		// *** List additional unassigned goons
 		// *** List working goons that can be re-assigned
 		this.$goonAssign.find('ul').html(h);
-		this.$goonAssign.slideDown(200);
+		this.$goonAssign.css({ "top" : top }).slideDown(200);
 	
 	}
 	
@@ -652,21 +766,22 @@ var PFGameClass = function ()
 		var newKey = "G" + this.game.goonKeyCounter.toString();
 		var faceWhere = ((this.roll1d(2) == 2) ? "left" : "right");
 		this.game.goons[newKey] = {
-			"goonTypeId" : goonTypeId
-			,"$elt" : {}
-			,"facing" : faceWhere
+			"key"			: newKey
+			,"goonTypeId" 	: goonTypeId
+			,"$elt" 		: {}
+			,"facing" 		: faceWhere
 			,"x" : 0
 			,"y" : 0
-			,"locomotionVelX" : this.getRandomVelocity(faceWhere)
-			,"locomotionVelY" : 0
-			,"externalVelX" : 0
-			,"externalVelY" : 0			
-			,"floorKey" : floorKey
-			,"isOutside" : false
-			,"hp"		: goonType.hitPoints
-			,"isDead"	: false
-			,"damage"	: goonType.damage
-			,"isGoon"	: true
+			,"locomotionVelX" 	: this.getRandomVelocity(faceWhere)
+			,"locomotionVelY" 	: 0
+			,"externalVelX" 	: 0
+			,"externalVelY" 	: 0			
+			,"floorKey" 	: floorKey
+			,"isOutside" 	: false
+			,"hp"			: goonType.hitPoints
+			,"isDead"		: false
+			,"damage"		: goonType.damage
+			,"isGoon"		: true
 		};
 		console.log("Adding goon, key = " + newKey + ", goonTypeId = " + goonTypeId + ", to floorKey = " + floorKey);
 
@@ -693,21 +808,22 @@ var PFGameClass = function ()
 		this.game.invaderKeyCounter++;
 		var newKey = "I" + this.game.invaderKeyCounter.toString();
 		this.game.invaders[newKey] = {
-			"invaderTypeId" : invaderTypeId
-			,"$elt" : {}
-			,"facing" : "left"
+			"key"			: newKey
+			,"invaderTypeId" : invaderTypeId
+			,"$elt" 		: {}
+			,"facing" 		: "left"
 			,"x" : 2000
 			,"y" : 0
-			,"locomotionVelX" : this.getRandomVelocity("left")
-			,"locomotionVelY" : 0
-			,"externalVelX" : 0
-			,"externalVelY" : 5			
-			,"floorKey" : "F0"
-			,"isOutside" : true
-			,"hp"		: invaderType.hitPoints
-			,"isDead"	: false
-			,"damage"	: invaderType.damage
-			,"isGoon"	: false
+			,"locomotionVelX" 	: this.getRandomVelocity("left")
+			,"locomotionVelY" 	: 0
+			,"externalVelX" 	: 0
+			,"externalVelY" 	: 5			
+			,"floorKey" 	: "F0"
+			,"isOutside" 	: true
+			,"hp"			: invaderType.hitPoints
+			,"isDead"		: false
+			,"damage"		: invaderType.damage
+			,"isGoon"		: false
 		};
 		console.log("Adding invader, key = " + newKey + ", invaderTypeId = " + invaderTypeId); 
 		
@@ -930,12 +1046,12 @@ var PFGameClass = function ()
 				toon.decay = 20;
 			} else if (toon.isUndead) {
 				toon.decay = 30;
-				this.total.souls += this.roll1d(9);
+				this.total.souls += this.roll1d(3);
 			} else {
 				toon.decay = 50;
-				this.total.souls += 10;
+				this.total.souls += this.roll1d(2);
 				if (!toon.isGoon) {
-					this.total.gold += this.roll1d(10);
+					this.total.gold += this.roll1d(2);
 				}
 			}
 			if (toon.isGoon) {
@@ -946,6 +1062,32 @@ var PFGameClass = function ()
 			toon.externalVelY = 6;
 			toon.isDead = true;
 			toon.$elt.addClass("dead");
+		}
+	}
+	
+	
+	this.lootCorpse = function (toonKey, isGoon) 
+	{
+		var toon = (isGoon) ? this.game.goons[toonKey] : this.game.invaders[toonKey];
+		// Is the toon is dead, not fully decyaed and not immortal, then you can loot!
+		var isToonLootable = toon.isDead && toon.decay > 0 && !toon.isImmortal;
+		if (isToonLootable) {
+			console.log("Looting Toon"); 
+			console.log(toon.decay);
+			//console.log(JSON.stringify(toon));
+			toon.decay = 0;
+			toon.$elt.addClass("decayed");
+			if (toon.isUndead) {
+				this.total.souls += this.roll1d(9);
+			} else {
+				this.total.souls += 10;
+				if (!toon.isGoon) {
+					this.total.gold += this.roll1d(8);
+				}		
+			}
+			console.log(toon.decay);
+			console.log("Toon looted"); 
+			//console.log(JSON.stringify(toon));
 		}
 	}
 	
@@ -1169,11 +1311,11 @@ var PFGameClass = function ()
 		if (zoomLevel > 3) 		return false; //zoomLevel = 3;
 		else if (zoomLevel < 0) return false; //zoomLevel = 0;	
 		this.zoom = zoomLevel;
-		this.$tower //.data("zoom", zoomLevel)
+		this.$tower.add('body') //.data("zoom", zoomLevel)
 			.removeClass("zoom0").removeClass("zoom1").removeClass("zoom2").removeClass("zoom3")
 			.addClass("zoom" + zoomLevel);
 		this.setSizesByZoom();
-		this.drawTower();
+		this.drawTower(true);
 		return zoomLevel;
 	}
 	this.setSizesByZoom = function () {
@@ -1239,44 +1381,78 @@ var PFGameClass = function ()
 	
 		//=========== Setup UI
 		
-		o.$tower = $('#tower');
-		o.$floors = $('#floors');
-		o.$ground = $('#ground');
-		o.$floorInfo = $('#floorInfo');
-		o.$settings = $('#settings');
-		o.$goonInfo = $('#goonInfo');
+		o.$body 		= $('body');
+		o.$tower 		= $('#tower');
+		o.$floors 		= $('#floors');
+		o.$ground 		= $('#ground');
+		o.$floorMenu 	= $('#floorMenu');
+		o.$settings 	= $('#settings');
+		o.$goonInfo 	= $('#goonInfo');
 		o.$floorPurchase = $('#floorPurchase');
-		o.$goonAssign = $('#goonAssign');
-		o.$currency = $('#currency');
+		o.$floorBuilder = $('#floorBuilder');
+		o.$goonAssign 	= $('#goonAssign');
+		o.$currency 	= $('#currency');
 		
-		$('body').on("click", function(e){
+		var closePopUp = function($pop){
+			$pop.hide(200);
+			$('footer').fadeOut();	
+		}
+		
+		o.$body.on("click", function(e){
 			var $target = $(e.target);
 			console.log($target);
 			if ($target.hasClass("viewFloor")) {
 				var floorKey = $target.data("floorkey");
 				o.selectFloor(floorKey);
-				o.viewFloor(floorKey);
+				//var top = o.$body.scrollTop();
+				var top = $target.offset().top;
+				o.viewFloor(floorKey, top, 0);
+				
 			} else if ($target.hasClass("floorTop")) {
-				o.refreshFloorPurchase(true);
+				
+				var top = $target.offset().top;
+				var left = $target.offset().left;
+				o.viewBuilder(true, top, left);
 				
 			} else if ($target.hasClass("floorBottom")) {
-				o.refreshFloorPurchase(false);
-			//} else if ($target.hasClass("buyFloor")) {
-			//	var floorTypeId = $target.data("floortypeid");
-			//	var isTop = $target.data("istop");
-			//	o.buyFloor(isTop, floorTypeId);
+				
+				var top = $target.offset().top;
+				var left = $target.offset().left;
+				o.viewBuilder(false, top, left);
+				
+			} else if ($target.hasClass("goon")) {	
+			
+				if ($target.hasClass("dead")) {
+					var goonKey = $target.data("goonkey");
+					o.lootCorpse(goonKey, true);
+				}
+
+			} else if ($target.hasClass("invader")) {	
+			
+				if ($target.hasClass("dead")) {
+					var invaderKey = $target.data("invaderkey");
+					o.lootCorpse(invaderKey, false);
+				}
+				
 			} else if ($target.hasClass("viewAssignWorker")) {
 				var floorKey = $target.data("floorkey");
-				$target.closest('.popUp').hide(200);
-				o.viewGoonAssignment(floorKey);
+				closePopUp( $target.closest('.popUp') );
+				//var top = $target.offset().top;
+				var top = o.$body.scrollTop();
+				o.viewGoonAssignment(floorKey, top);
+				
 			} else if ($target.hasClass("buyGoon")) {
 				var floorKey = $target.data("floorkey");
 				var goonTypeId = $target.data("goontypeid");
 				o.buyGoon(goonTypeId, floorKey);
+				
 			} else if ($target.hasClass("floorPurchase")) {
-				alert("Not available yet");
+				closePopUp( $target.closest('.popUp') );
+				var top = o.$body.scrollTop();
+				o.viewFloorPurchase(top);
+				
 			} else if ($target.hasClass("toggleFloorDescription")) {
-				$target.closest('.popUp').find('.floorDescription').toggle(400);
+				$target.closest('.popUp').find('.descriptiveInfo').toggle(400);
 			}
 			// Settings
 			else if ($target.hasClass("zoomOut")) {
@@ -1287,17 +1463,24 @@ var PFGameClass = function ()
 			
 			// Close popup
 			if ($target.hasClass("closePopUp")) {
-				$target.parent().hide(200);
-				$('footer').fadeOut();
+				closePopUp( $target.parent() );
 				o.deselectFloor();
 			}
 		});
+		
+		// Some UI stuff that will be constant
 		
 		$('.openSettings').click(function(e){
 			o.$settings.slideDown();
 			$('footer').fadeIn();
 			console.log($('footer'));
 		});
+		$('.toggleWorkerInfo').click(function(e){
+			$('.workerInfo').toggle(200);
+		});
+		$('.toggleProductionInfo').click(function(e){
+			$('.productionInfo').toggle(200);
+		});		
 		
 		/*
 		$('.save').click(function(e){
@@ -1427,29 +1610,34 @@ var PFGameClass = function ()
 			o.isSoundOn = JSON.parse(loadedSound);
 		}		
 
-		$('body > header').fadeIn(5000);
-		if (false /* !isLoaded */) {
-			$('.intro').fadeIn(1000);
-		} else {
-			/*
-			o.calculateCoreValues();
-			o.writeUpgrades();
-			//o.addFlipCardEvents();
-			$('.metrics').slideDown(1000);
-			$('footer').slideDown(3000);
-			$('.progress').show(2000);
-			$('.threeCols').fadeIn(2000, function(){
+		$('.subTitle').html("ver " + o.version);
+		
+		$('body > header').hide().fadeIn(150, function(){
+		
+			$('#controls').hide().slideDown(1500)
+			if (false /* !isLoaded */) {
+				$('.intro').fadeIn(1000);
+			} else {
+				/*
+				o.calculateCoreValues();
+				o.writeUpgrades();
+				//o.addFlipCardEvents();
+				$('.metrics').slideDown(1000);
+				$('footer').slideDown(3000);
+				$('.progress').show(2000);
+				$('.threeCols').fadeIn(2000, function(){
+					if (isStartLoop) {
+						o.startLoop();
+					}
+				});
+				*/
+				o.calculateFloorsCounts();
+				o.drawTower();
 				if (isStartLoop) {
 					o.startLoop();
 				}
-			});
-			*/
-			o.calculateFloorsCounts();
-			o.drawTower();
-			if (isStartLoop) {
-				o.startLoop();
 			}
-		}
+		});
 	}
 
 	
@@ -1504,6 +1692,12 @@ var PFGameClass = function ()
 	
 	this.roll1d = function (sides) {
 		return (Math.floor(Math.random()*sides) + 1);
+	}
+	
+	//========================================= Helper Functions
+	
+	this.cloneDataObject = function (o) {
+		return JSON.parse(JSON.stringify(o));
 	}
 
 

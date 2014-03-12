@@ -12,7 +12,7 @@
 
 	<header>
 		<h1>Phantom Fortress</h1>
-		<div class="subTitle">ver 0.5</div>
+		<div class="subTitle"></div>
 	</header>
 	
 	<section id="intro">
@@ -22,13 +22,13 @@
 	<section id="controls">
 		<div id="currency">
 			<ul>
-				<li><span class="currNum goldNum"></span><span class="currencyIcon iconGold"><span>Gold</span></span></li>
-				<li><span class="currNum soulsNum"></span><span class="currencyIcon iconSouls"><span>Soul Shards</span></span></li>
-				<li><span class="currNum arcaneNum"></span><span class="currencyIcon iconArcane"><span>Arcane Knowledge</span></span></li>
-				<!---<li><span class="currNum foodNum"></span><span class="currencyIcon iconFood">Food</span></li>--->
-				<li><span class="currNum stoneNum"></span><span class="currencyIcon iconStone"><span>Stone</span></span></li>
-				<li><span class="currNum oreNum"></span><span class="currencyIcon iconOre"><span>Ore</span></span></li>				
-				<li><span class="currNum floorNum"></span><span class="currencyIcon iconFloors"><span>Floors</span></span></li>
+				<li><span class="currNum goldNum"></span><span class="currencyIcon icon_gold"><span>Gold</span></span></li>
+				<li><span class="currNum soulsNum"></span><span class="currencyIcon icon_souls"><span>Soul Shards</span></span></li>
+				<li><span class="currNum arcaneNum"></span><span class="currencyIcon icon_arcane"><span>Arcane Knowledge</span></span></li>
+				<!---<li><span class="currNum foodNum"></span><span class="currencyIcon icon_food">Food</span></li>--->
+				<li><span class="currNum stoneNum"></span><span class="currencyIcon icon_stone"><span>Stone</span></span></li>
+				<li><span class="currNum oreNum"></span><span class="currencyIcon icon_ore"><span>Ore</span></span></li>				
+				<li><span class="currNum floorNum"></span><span class="currencyIcon icon_floors"><span>Floors</span></span></li>
 			</ul>
 		</div>
 		<button type="button" class="openSettings">Settings</button>
@@ -53,45 +53,57 @@
 		<ul class="blockList">
 			<!--- Floor name, description, price --->
 		</ul>
-		<button type="button" class="closePopUp">X</button>
+		<button type="button" class="popUpX closePopUp">X</button>
 	</section>
 	
-	<section id="floorInfo" class="popUp">
-		<h1 class="floorName"><!--- Floor name ---></h1>
-		<div class="floorAvailability">
-			<h2>Positions Available</h2>
-			<ul>
-				<!--- List of free positions --->
-			</ul>
-		</div>		
-		<div class="floorDescription"><!--- Floor description ---></div>
-		<div class="menu">
-			<button type="button" class="toggleFloorDescription">Info</button>
-			<button type="button" class="floorPurchase NA">Rebuild</button>
-			<button type="button" class="viewAssignWorker">Add Worker</button>
-			<button type="button" class="NA">Banish Workers</button>
-			<button type="button" class="NA">Shut Down</button>
+	<section id="floorBuilder" class="floorSizeMenu popUp">
+		<button type="button" class="buildNewFloor">Build</button>
+		<button type="button" class="closePopUp">Nevermind</button>
+		<div class="cost">
+			<!--- fill in with costs --->
+		</div>
+	</section>
+	
+	<section id="floorMenu" class="floorSizeMenu popUp">		
+		
+		<button type="button" class="buttonAddWorker viewAssignWorker buttonImportant">Add Goon...</button>
+		<button type="button" class="buttonRebuild floorPurchase buttonImportant">Remodel...</button>
+		<button type="button" class="buttonProduction toggleProductionInfo">Production</button>
+		<button type="button" class="buttonWorker toggleWorkerInfo">
+			<span class="workerCount"></span> Goons
+		</button>
+		<button type="button" class="buttonInfo toggleFloorDescription">Info</button>
+		
+		<div class="descriptiveInfo">
+			<h1 class="floorName"><!--- Floor name ---></h1>
+			<div class="floorDescription"><!--- Floor description ---></div>
 		</div>
 		
-
-		<div class="floorWorkers">
-			<h2>Workers</h2>
-			<ul>
-				<!--- List of Workers --->
-			</ul>
+		<div class="productionInfo">
+			<div class="naturalResources">
+				<h2>Natural Resources</h2>
+				<ul>
+					<!--- List of resources Left --->
+				</ul>
+			</div>			
 		</div>
-		<div class="naturalResources">
-			<h2>Natural Resources</h2>
-			<ul>
-				<!--- List of resources Left --->
-			</ul>
+		<div class="workerInfo">
+			<div class="floorAvailability">
+				<h2>Positions Available</h2>
+				<ul>
+					<!--- List of free positions --->
+				</ul>
+			</div>
+			<div class="floorWorkers">
+				<h2>Workers</h2>
+				<ul>
+					<!--- List of Workers --->
+				</ul>
+			</div>
+			<button type="button" class="buttonRemoveWorker NA">Banish Workers</button>
+			<button type="button" class="buttonCandleOn NA">Shut Down</button>			
 		</div>
-		<!---
-		<div class="floorStorage">
-		</div>
-		--->
-		</div>
-		<button type="button" class="closePopUp">X</button>
+		<button type="button" class="popUpX closePopUp">X</button>
 	</section>
 
 	<section id="goonAssign" class="popUp">
@@ -99,7 +111,7 @@
 		<ul class="blockList">
 			<!--- Goon name, description, price --->
 		</ul>
-		<button type="button" class="closePopUp">X</button>
+		<button type="button" class="popUpX closePopUp">X</button>
 	</section>	
 
 	<section id="goonInfo" class="popUp">
@@ -107,7 +119,7 @@
 		<div>
 			<!--- Goon name, description, options --->
 		</div>
-		<button type="button" class="closePopUp">X</button>
+		<button type="button" class="popUpX closePopUp">X</button>
 	</section>
 	
 	
@@ -115,7 +127,7 @@
 		<h1>Zoom</h1>
 		<button type="button" class="zoomOut">Zoom Out</button>
 		<button type="button" class="zoomIn">Zoom In</button>
-		<button type="button" class="closePopUp">X</button>
+		<button type="button" class="popUpX closePopUp">X</button>
 	</section>	
 	
 	

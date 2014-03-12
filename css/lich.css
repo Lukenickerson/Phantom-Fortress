@@ -48,7 +48,7 @@ h1 {
 /* =========== Header / Menus ============ */
 
 header {
-	display: block;
+	display: none;
 	position: absolute; z-index: 20;
 	top: 3em; left: 10%;
 }
@@ -69,6 +69,7 @@ header {
 	}	
 
 #controls {
+	display: none;
 	position: fixed; z-index: 20;
 	left: 0; top: 0;
 	/* height: 3em; */
@@ -117,12 +118,12 @@ header {
 			text-align: center;
 			color: transparent;
 		}
-		.iconGold {		background-image: url('../images/icon_gold_32.png'); }
-		.iconSouls {	background-image: url('../images/icon_souls_32.png'); }
-		.iconStone {	background-image: url('../images/icon_stone_32.png'); }
-		.iconOre {		background-image: url('../images/icon_iron_32.png'); }
-		.iconArcane {	background-image: url('../images/icon_scroll_32.png'); }		
-		.iconFloors {	background-image: url('../images/icon_tower_32.png'); }
+		.icon_gold {		background-image: url('../images/icon_gold_32.png'); }
+		.icon_souls {	background-image: url('../images/icon_souls_32.png'); }
+		.icon_stone {	background-image: url('../images/icon_stone_32.png'); }
+		.icon_ore {		background-image: url('../images/icon_iron_32.png'); }
+		.icon_arcane {	background-image: url('../images/icon_scroll_32.png'); }		
+		.icon_floors {	background-image: url('../images/icon_tower_32.png'); }
 		.currencyIcon > span {
 			position: absolute;
 			bottom: 0; left: 0;
@@ -140,7 +141,14 @@ header {
 	#controls .openSettings {
 		display: block;
 		position: fixed;
-		top: 0.1em; right: 0.1em;
+		top: 0.5em; right: 0.5em;
+		width: 2em; height: 2em;
+		padding: 1em;
+		color: transparent;
+		background-image: url('../images/icon_gear_160.png');
+		background-repeat: no-repeat;
+		background-position: center center;
+		background-size: 2em 2em;
 	}
 	
 	#hand {
@@ -175,13 +183,12 @@ footer a {
 .popUp {
 	display: none;
 	box-sizing: border-box;
-	position: fixed; z-index: 100;
-	top: 0; left: 0;
+	position: absolute; z-index: 100;
+	top: 64px; left: 0;
 	max-width: 92%; 
-	max-height: 92%;
 	margin: 1% 1%;
-	padding: 2em;
-	border: solid 1em black;
+	padding: 1em;
+	border: solid 0.3em black;
 	border-radius: 1em;
 	box-shadow: inset 0 0 1em rgba(0,0,0,0.5)
 		, 0 0 2em black;
@@ -190,7 +197,6 @@ footer a {
 	*/
 	background-color: /* #225 */ rgba(34,34,85,0.95);
 	color: white;
-	overflow: auto;
 }
 .popUp:after {
 	position: fixed;
@@ -199,17 +205,21 @@ footer a {
 	background-color: rgba(255,0,0,0.9);
 }
 
-.closePopUp {
+/* .closePopUp */
+.popUpX {
 	position: absolute; z-index: 101;
 	top: 0; right: 0;
 	font-size: 150%;
 	padding: 0.5em 1em;
+	margin: -0.25em -0.25em 0.25em 0.25em;
 	background: black;
 	color: white;
-	border-color: #333;
-	border-radius: 1em;
+	border: solid 2px black;
+	border-radius: 0.5em;
 	cursor: pointer;
+	font-family: arial;
 }
+.popUpX:hover { color: black; }
 
 
 .buyFloor {
@@ -220,6 +230,7 @@ footer a {
 	cursor: pointer;
 	overflow: auto;
 	width: 49%;
+	min-width: 14em;
 	float: left;
 }
 .buyFloor:nth-child(odd) {
@@ -236,9 +247,16 @@ footer a {
 }
 .buyFloor .floorName {
 	display: block;
-	margin: 0 2em 1em 0;
+	margin: 0 1em 1em 0;
 	font-family: 'Original Surfer', cursive;
 	font-size: 120%;
+	float: left;
+	width: 50%;
+	min-width: 8em;
+}
+.floorPreview {
+	width: 120px; height: 32px; 
+	float: right;
 }
 .buyFloor .cost {
 	display: block;
@@ -260,25 +278,62 @@ footer a {
 
 /* === Floor Info === */
 
-#floorInfo {
+#floorMenu {
+	margin-top: 160px;
+	max-width: 600px;
+	margin-left: 10%;
+	text-align: center;
 }
 
-#floorInfo .floorName {
+.floorSizeMenu {
+	max-width: 600px;
+}
+	.zoom1 .floorSizeMenu {		max-width: 450px; margin-top: 120px;}
+	.zoom2 .floorSizeMenu {		max-width: 300px; margin-top: 80px;	}
+	.zoom3 .loorSizeMenu {		max-width: 150px; margin-top: 40px;	}
+
+#floorMenu > div {
+	display: none;
+}
+
+#floorMenu .floorName {
 	margin: 0 0 1em 0;
 }
-#floorInfo .floorDescription {
-	display: none;
+#floorMenu .floorDescription {
 	margin: 1em 0;
 }
-#floorInfo .menu {
-	float: left;
-	width: 11em;
-	margin-right: 2em;
-}
-	#floorInfo .menu button {
-		display: block;
-		width: 100%;
+
+	#floorMenu button:not(.closePopUp) {
+		display: inline-block;
+		width: 120px;
+		min-width: 120px;
+		height: 100px;
+		/* float: left; */
+		padding: 50px 0.5em 0 0.5em;
+		margin: 0 5% 0.5em 0;
+		background-repeat: no-repeat;
+		background-position: center center;
+		background-size: 100px 100px;
+		line-height: 1em;		
+		color: white;
+		font-weight: bold;
+		text-shadow: 0 0 0.25em black;
 	}
+	
+	#floorMenu button.buttonImportant { width: 40%; }
+	
+	.buttonInfo {			background-image: url('../images/icon_info.png'); }
+	.buttonProduction {		background-image: url('../images/icon_hammer.png'); }
+	.buttonRebuild {		background-image: url('../images/icon_wrench.png'); }
+	.buttonWorker {			background-image: url('../images/icon_worker.png'); }
+	.buttonAddWorker {		background-image: url('../images/icon_add_worker.png'); }
+	.buttonRemoveWorker {	background-image: url('../images/icon_remove_worker.png'); }
+	.buttonCandleOn {		background-image: url('../images/icon_candle_on.png'); }
+	.buttonCandleOff {		background-image: url('../images/icon_candle_off.png'); }
+	
+.productionInfo, .workerInfo {
+	clear: both;
+}	
 
 .floorAvailability > ul {
 	padding: 0; margin: 0;
@@ -304,6 +359,29 @@ li.viewAssignWorker:hover {
 	background-color: rgba(255,255,255,0.25);
 }
 
+/* === Floor Builder === */
+
+#floorBuilder {
+	margin-left: 10%;
+	text-align: center;
+}
+#floorBuilder .cost {
+	margin: 1em 0 0 0;
+}
+#floorBuilder button {
+	padding: 1em;
+}
+#floorBuilder button.buildNewFloor {
+	background-position: center left;
+	background-repeat: no-repeat;
+	background-image: url('../images/icon_wrench.png');
+	background-size: 4em 4em;
+	padding: 1em 1em 1em 5em;
+}
+
+
+/* === Goon Buyer === */
+
 .buyGoon {
 	display: inline-block;
 	padding: 1em;
@@ -311,12 +389,22 @@ li.viewAssignWorker:hover {
 	height: 5em;
 	margin: 0 1em 1em 0;
 	border: solid 1px black;
+	background-repeat: no-repeat;
+	background-position: top right;
+	background-size: 5em 5em;
 }
+/*
 .buyGoon:after {
 	content: "click to buy goon worker";
 }
+*/
 .buyGoon:hover {
 	background-color: rgba(255,255,255,0.25);
+}
+
+.goonName {
+	display: block;
+	font-weight: bold;
 }
 
 .viewAssignWorker:after
@@ -332,6 +420,8 @@ li.viewAssignWorker:hover {
 #settings {
 	left: auto; right: 0;
 }
+
+
 
 	
 /* ======== Tower ======== */
@@ -429,10 +519,12 @@ li.viewAssignWorker:hover {
 	line-height: 5em; /* 120px; */
 }
 
-.floor, .floorTop, .floorBottom {
+.floor, .floorTop, .floorBottom, .floorPreview {
 	background-position: center center;
 	background-size: 100% 100%;
 }
+
+
 .floor {
 	font-family: 'Original Surfer', cursive;
 }
@@ -452,7 +544,7 @@ li.viewAssignWorker:hover {
 
 .floor_Base {		background-image: url('../images/floor_base.png'); }
 .floor_Mine {		background-image: url('../images/floor_mine.png'); }
-.floor_Shipping {	background-image: url('../images/floor_boxes.png'); }
+.floor_Shipping {	background-image: url('../images/floor_boxes_stacked.png'); }
 .floor_Trading {	background-image: url('../images/floor_boxes.png'); }
 .floor_Traps {		background-image: url('../images/floor_plain.png'); }
 .floor_Experiment {	background-image: url('../images/floor_experiment.png'); }
@@ -461,6 +553,8 @@ li.viewAssignWorker:hover {
 .floor_Telescope {	background-image: url('../images/floor_telescope.png'); }
 .floor_Portal {		background-image: url('../images/floor_portal.png'); }
 .floor_Crypt {		background-image: url('../images/floor_crypt.png'); }
+.floor_Empty {		background-image: url('../images/floor_empty.png'); }
+.floor_Tunnel {		background-image: url('../images/floor_tunnel.png'); }
 
 .naturalResourcesIndicator {
 	position: absolute; 
@@ -552,7 +646,15 @@ li.viewAssignWorker:hover {
 	box-shadow: 0 0 1em #313;
 }
 
-
+.dead {
+	cursor: pointer;
+}
+.dead:hover {
+	opacity: 0.8;
+}
+.decayed {
+	opacity: 0.5;
+}
 
 
 

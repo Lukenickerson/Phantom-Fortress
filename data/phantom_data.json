@@ -5,17 +5,41 @@
 			,"description" : "The ground floor of the fortress is where the combat happens!"
 			,"jobName"	: "guard"
 			,"forSale"	: false
-			,"purchaseCostMultiplier" : 10
+			,"cost" : {}
 			,"isTopOnly" 	: false
 			,"isBottomOnly"	: false
 			,"workerSpaces"	: 3
 		}
 		,{
+			"name"		: "Empty"
+			,"description" : "An empty stone room. Not very interesting or useful."
+			,"jobName"	: "fool"
+			,"forSale"	: false
+			,"cost" 		: { "gold" : 100 }
+			,"isTopOnly" 	: false
+			,"isBottomOnly"	: false
+			,"workerSpaces"	: 1
+			,"output" : {
+			}
+		}
+		,{
+			"name"		: "Tunnel"
+			,"description" : "An earthen tunnel dug under the fortress."
+			,"jobName"	: "digger"
+			,"forSale"	: false
+			,"cost" 		: { "gold" : 100 }			
+			,"isTopOnly" 	: false
+			,"isBottomOnly"	: true
+			,"workerSpaces"	: 1
+			,"output" : {
+			}
+		}		
+		,{
 			"name"		: "Mine"
 			,"description" : "A mine allows you to dig valuable natural resources out of the ground."
 			,"jobName"	: "miner"
 			,"forSale"	: true
-			,"purchaseCostMultiplier" : 1
+			,"cost" 		: { "gold" : 100 }			
 			,"isTopOnly" 	: false
 			,"isBottomOnly"	: true
 			,"workerSpaces"	: 2
@@ -28,7 +52,7 @@
 			,"description" : "A trading floor allows you to generate a small amount of gold. Essential for having a steady income of gold."
 			,"jobName"	: "merchant"
 			,"forSale"	: true
-			,"purchaseCostMultiplier" : 1
+			,"cost" 		: { "gold" : 100 }
 			,"isTopOnly" 	: false
 			,"isBottomOnly"	: false			
 			,"workerSpaces"	: 3
@@ -40,7 +64,7 @@
 			"name"		: "Storage"
 			,"description" : "[doesn't work yet]"
 			,"forSale"	: false
-			,"purchaseCostMultiplier" : 2.1
+			,"cost" 		: { "gold" : 100 }
 			,"isTopOnly" 	: false
 			,"isBottomOnly"	: false			
 		}		
@@ -49,7 +73,7 @@
 			,"description" : "This shipping floor allows you to sell ore for gold. Requires a good supply of ore."
 			,"jobName"	: "merchant"
 			,"forSale"	: true
-			,"purchaseCostMultiplier" : 2.5
+			,"cost" 		: { "gold" : 300, "ore" : 25 }
 			,"isTopOnly" 	: false
 			,"isBottomOnly"	: false			
 			,"workerSpaces"	: 2
@@ -65,7 +89,7 @@
 			,"description" : "Research done on this floor will increase arcane knowledge."
 			,"jobName"	: "researcher"
 			,"forSale"	: true
-			,"purchaseCostMultiplier" : 3
+			,"cost" 		: { "gold" : 400 }
 			,"isTopOnly" 	: false
 			,"isBottomOnly"	: false			
 			,"workerSpaces"	: 2
@@ -78,7 +102,7 @@
 			,"description" : "Tending the tombs of the dead provides some soul shards."
 			,"jobName"	: "undertaker"
 			,"forSale"	: true
-			,"purchaseCostMultiplier" : 3
+			,"cost" 		: { "gold" : 500, "souls" : 250 }
 			,"isTopOnly" 	: false
 			,"isBottomOnly"	: true			
 			,"workerSpaces"	: 1			
@@ -91,7 +115,7 @@
 			,"description" : "The dark experiments done on this floor will convert souls into arcane knowledge."
 			,"jobName"	: "investigator"
 			,"forSale"	: true
-			,"purchaseCostMultiplier" : 5
+			,"cost" 		: { "gold" : 1000, "arcane" : 500 }
 			,"isTopOnly" 	: false
 			,"isBottomOnly"	: false			
 			,"workerSpaces"	: 2
@@ -107,7 +131,7 @@
 			,"description" : "Viewing the cosmic heavens produces arcane knowledge."
 			,"jobName"	: "astrologer"
 			,"forSale"	: true
-			,"purchaseCostMultiplier" : 10
+			,"cost" 		: { "gold" : 2000 }
 			,"isTopOnly" 	: true
 			,"isBottomOnly"	: false			
 			,"workerSpaces"	: 2
@@ -120,7 +144,7 @@
 			,"description" : "Powerful arcane magics can be used to summon souls from the Netherworld."
 			,"jobName"	: "gatekeeper"
 			,"forSale"	: true
-			,"purchaseCostMultiplier" : 20
+			,"cost" 		: { "gold" : 3000, "arcane" : 1000 }
 			,"isTopOnly" 	: false
 			,"isBottomOnly"	: false			
 			,"workerSpaces"	: 2
@@ -137,7 +161,7 @@
 			,"description" : "[doesn't work yet]"
 			,"jobName"	: "guard"
 			,"forSale"	: false
-			,"purchaseCostMultiplier" : 10
+			,"cost" 		: { "gold" : 500 }
 			,"isTopOnly" 	: false
 			,"isBottomOnly"	: false			
 			,"workerSpaces"	: 2			

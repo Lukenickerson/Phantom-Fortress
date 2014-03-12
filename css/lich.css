@@ -45,6 +45,8 @@ h1 {
 	margin: 0;
 }
 
+.clear {	clear: both; }
+
 /* =========== Header / Menus ============ */
 
 header {
@@ -97,7 +99,7 @@ header {
 		padding: 0;
 	}
 		.currNum {
-			font-size: 40px;
+			font-size: 32px;
 			color: #eee;
 			text-shadow: 1px 1px 0 black;
 		}
@@ -117,6 +119,7 @@ header {
 			background-repeat: no-repeat;
 			text-align: center;
 			color: transparent;
+			vertical-align: top;
 		}
 		.icon_gold {		background-image: url('../images/icon_gold_32.png'); }
 		.icon_souls {	background-image: url('../images/icon_souls_32.png'); }
@@ -268,8 +271,7 @@ footer a {
 	}
 
 .buyFloor .currencyIcon {
-	display: block;
-	float: left;
+
 }
 .buyFloor .floorDescription {
 	display: block;
@@ -317,10 +319,17 @@ footer a {
 		line-height: 1em;		
 		color: white;
 		font-weight: bold;
-		text-shadow: 0 0 0.25em black;
+		text-shadow: 1px 1px 0 black, 0 0 0.25em black;
 	}
 	
 	#floorMenu button.buttonImportant { width: 40%; }
+	#floorMenu button.disabledButton { 
+		opacity: 0.5; 
+		border-color: transparent; 
+		background-color: rgba(80,80,80,0.5);
+		cursor: not-allowed;
+		box-shadow
+	}
 	
 	.buttonInfo {			background-image: url('../images/icon_info.png'); }
 	.buttonProduction {		background-image: url('../images/icon_hammer.png'); }
@@ -364,13 +373,16 @@ li.viewAssignWorker:hover {
 #floorBuilder {
 	margin-left: 10%;
 	text-align: center;
+	padding-right: 4.5em;
 }
 #floorBuilder .cost {
 	margin: 1em 0 0 0;
 }
+/*
 #floorBuilder button {
 	padding: 1em;
 }
+*/
 #floorBuilder button.buildNewFloor {
 	background-position: center left;
 	background-repeat: no-repeat;
@@ -390,7 +402,7 @@ li.viewAssignWorker:hover {
 	margin: 0 1em 1em 0;
 	border: solid 1px black;
 	background-repeat: no-repeat;
-	background-position: top right;
+	background-position: bottom right;
 	background-size: 5em 5em;
 }
 /*
@@ -404,7 +416,11 @@ li.viewAssignWorker:hover {
 
 .goonName {
 	display: block;
+	margin-bottom: 0.5em;
 	font-weight: bold;
+	font-family: 'Original Surfer', cursive;
+	font-size: 1.1em;
+	text-shadow: 1px 1px 0 black, 0 0 0.25em rgba(0,0,0,0.5);
 }
 
 .viewAssignWorker:after
@@ -421,6 +437,14 @@ li.viewAssignWorker:hover {
 	left: auto; right: 0;
 }
 
+.tips {
+	max-width: 20em;
+	font-family: 'Original Surfer', cursive;
+	font-size: 1.1em;
+}
+.tips li {
+	margin-bottom: 1em;
+}
 
 
 	
@@ -529,14 +553,18 @@ li.viewAssignWorker:hover {
 	font-family: 'Original Surfer', cursive;
 }
 .floor .floorName {
-	display: none;
 	padding: 0.5em 1em;
+	display: inline-block;
 	font-size: 150%;
 	color: white;
 	text-shadow: 0 0 0.5em black, 1px 1px 0 black;
+	opacity: 0;
+	transition: all 1s ease-in-out;
 }
 .floor:hover .floorName {
-	display: inline-block;
+	opacity: 1;
+	
+	
 }
 
 .floorTop {			background-image: url('../images/floor_top.png'); }
@@ -584,6 +612,7 @@ li.viewAssignWorker:hover {
 	left: -5000px;
 	text-align: center;
 	color: transparent;
+	/* transition: all 0.5s ease-in-out; */
 	/* background-color: rgba(255,255,255,0.4); */
 	background-position: center center;
 	background-repeat: no-repeat;
@@ -620,6 +649,12 @@ li.viewAssignWorker:hover {
 .goon_DeepOrc {					background-image: url('../images/deeporc_160_left.png'); }
 .goon_DeepOrc.rightFacing {		background-image: url('../images/deeporc_160_right.png'); }
 .goon_DeepOrc.dead {			background-image: url('../images/orc_160_dead.png'); }
+.goon_GhoulBat {				background-image: url('../images/ghoulbat_160_left.png'); }
+.goon_GhoulBat.rightFacing {	background-image: url('../images/ghoulbat_160_right.png'); }
+.goon_GhoulBat.dead {			background-image: url('../images/ghoulbat_160_dead.png'); }
+.goon_WizardEye {				background-image: url('../images/wizardeye_160_left.png'); }
+.goon_WizardEye.rightFacing {	background-image: url('../images/wizardeye_160_right.png'); }
+.goon_WizardEye.dead {			background-image: url('../images/wizardeye_160_dead.png'); }
 
 .invader_Knight {				background-image: url('../images/knight_160_left.png'); }
 .invader_Knight.rightFacing {	background-image: url('../images/knight_160_right.png'); }

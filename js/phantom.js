@@ -41,7 +41,7 @@ var PFGameClass = function ()
 		,"groups"	: {}
 		*/
 	};
-	this.version = "0.54";
+	this.version = "0.55";
 	//==== Game Data
 	this.game = {
 		"floorKeyCounter" : 0
@@ -123,7 +123,7 @@ var PFGameClass = function ()
 	this.maxInvaders = 1;
 	this.total = {
 		"gold"		: 300
-		,"souls" 	: 40
+		,"souls" 	: 30
 		,"arcane" 	: 0
 		,"stone"	: 0
 		,"ore"		: 0
@@ -401,7 +401,7 @@ var PFGameClass = function ()
 		var h = "";
 		for (var c in cost) {
 			var currencyLongName = this.currencyTypeLongNames[c];
-			h += ' <span class="cost">' 
+			h += ' <span class="currNum ' + c + 'Num">' 
 				+ cost[c] 
 				+ '</span><span class="currencyIcon icon_' + c + '">'
 				+ currencyLongName + '</span>';
@@ -425,6 +425,8 @@ var PFGameClass = function ()
 		this.$floors.children('div').removeClass("selected");
 	}
 
+	//======== Pop-up Menus / Floor Controls ====================================\\
+	
 	this.viewFloor = function (floorKey, top, left) 
 	{
 		var floorObj = this.game.floors[floorKey];
@@ -434,15 +436,29 @@ var PFGameClass = function ()
 		var $floorNR = this.$floorMenu.find('.naturalResources');
 		var availHtml = "", workersHtml = "", nrHtml = "";
 		var workerCount = floorObj.goonKeyArray.length;
+		var availCount = floorTypeObj.workerSpaces - workerCount;
 		if (typeof floorTypeObj.workerSpaces === 'undefined') floorTypeObj.workerSpaces = 0;
 		
 		$('.workerCount').html( workerCount + "/" + floorTypeObj.workerSpaces);
+		
+		// Disable buttons that can't be used
+		if (availCount > 0) {
+			this.$floorMenu.find('.buttonAddWorker').removeClass("disabledButton");
+		} else {
+			this.$floorMenu.find('.buttonAddWorker').addClass("disabledButton");
+		}
+		if (floorKey == "F0") {
+			this.$floorMenu.find('.buttonRebuild').addClass("disabledButton");
+		} else {
+			this.$floorMenu.find('.buttonRebuild').removeClass("disabledButton");
+		}		
+		
 		if (floorTypeObj.workerSpaces == 0) {
 			availHtml = '<p>This floor does not have space for workers.</p>';
 		} else {
 			if (typeof floorObj.goonKeyArray === 'undefined') floorObj.goonKeyArray = [];
 			
-			var availCount = floorTypeObj.workerSpaces - workerCount;
+			
 			//console.log("Worker Count: " + workerCount + ", Available Count: " + availCount);
 			
 			for (var i = 0; i < availCount; i++) {
@@ -474,6 +490,8 @@ var PFGameClass = function ()
 		}
 		if (nrHtml != "") {
 			$floorNR.children('ul').html( nrHtml );
+		} else {
+			$floorNR.children('ul').html( '<li>None</li>' );
 		}
 		this.$floorMenu.css({"top" : top, "left" : left}).slideDown(200);
 	}
@@ -490,14 +508,14 @@ var PFGameClass = function ()
 		var h = "";
 		var $floorList = this.$floorPurchase.find("ul").empty();
 		var floorType = {};
-		var isTop = false;
+		var isTop = o.isFloorOnTop(floorKey);
+		console.log(floorKey);
 		var cost = {};
 		var affordableClass = "";
 		var $li = {};
 		// Loop over all floor types
 		for (var floorTypeId in o.data.floors) {
 			floorType = o.data.floors[floorTypeId];
-			isTop = o.isFloorOnTop(floorKey);
 			if (!floorType.forSale) {
 				// Not for sale
 			} else if (isTop && floorType.isBottomOnly || !isTop && floorType.isTopOnly) {
@@ -512,7 +530,7 @@ var PFGameClass = function ()
 					+ '<span class="floorName">' + floorType.name + '</span>'
 					// *** replace space with ...?
 					+ '<div class="floorPreview floor_' + floorType.name + '"></div>';
-				h += o.getCurrencyHtml(cost);
+				h += '<br class="clear" />' + o.getCurrencyHtml(cost);
 
 				h += ' <span class="floorDescription">' + floorType.description + '</span>';
 					//+ ' <button type="button" class="buyFloor">Buy Floor</button>'
@@ -637,20 +655,20 @@ var PFGameClass = function ()
 	{
 		var finalCost = {};
 		this.calculateFloorsCounts();
+		this.calculateFloorsCounts();
 		// Are we building a new floor?
 		if (typeof isNewFloor === 'boolean' && isNewFloor) {
-			this.calculateFloorsCounts();
 			//console.log("isTop=" + isTop + ", " + this.topFloorsCount + ", " + this.bottomFloorsCount);
 			// Get cost based on distance from ground floor 
 			var floorCount = (isTop) ? this.topFloorsCount : this.bottomFloorsCount;
-			var goldCost = floorType.cost.gold;
-			finalCost.gold = goldCost + (goldCost * 0.9 * floorCount);
+			var g = floorType.cost.gold;
+			finalCost.gold = g + (g * 0.9 * floorCount);
 			if (isTop) { 
 				finalCost.stone = 100 + (40 * floorCount);
 			}
 		} else {
 		// Not building a new floor, just remodeling
-			finalCost = floorType.cost;
+			finalCost = this.cloneDataObject(floorType.cost);
 			// Make it cost slightly more as the # of floors increases
 			// *** calibrate this
 			// *** maybe make it more expensive the more you have of each floor type
@@ -661,14 +679,15 @@ var PFGameClass = function ()
 	
 	this.isFloorOnTop = function (floorKey) 
 	{
-		var isTop = false;
+		var isTop = true;
 		var iterativeFloorTypeId = -1;
-		for (var i = 0; i < this.floorArray; i++) {
-			iterativeFloorKey = this.floorArray[i];
+		var floorNum = this.game.floorArray.length;
+		for (var i = 0; i < floorNum; i++) {
+			iterativeFloorKey = this.game.floorArray[i];
 			if (iterativeFloorKey == floorKey) {
 				return isTop;
 			} else if (iterativeFloorKey == "F0") {
-				isTop = true;
+				isTop = false;
 				//return isTop; // safe to default to top?
 			}
 		}
@@ -703,13 +722,8 @@ var PFGameClass = function ()
 					+ ' data-goontypeid="' + goonId + '" '
 					+ '>'
 					+ '<span class="goonName">' + goonType.name + '</span>';
-				console.log(goonType);
-				for (var currency in goonType.cost) {
-					// *** fix formatting here
-					h += ' ' + goonType.cost[currency];
-					h += ' ' + currency;
-				}
-
+				//console.log(goonType);	
+				h += this.getCurrencyHtml(goonType.cost);
 				h += '</li>';
 			}
 		}
@@ -887,6 +901,7 @@ var PFGameClass = function ()
 		// Handle locomotion based on life/death
 		if (toon.isDead) {
 			weightMultiplier = 1;
+			// Stop all locomotion
 			if (toon.locomotionVelX != 0) {
 				toon.externalVelX += toon.locomotionVelX;
 				toon.locomotionVelX = 0;
@@ -902,12 +917,21 @@ var PFGameClass = function ()
 		if (isOnGround && toon.externalVelX != 0) {
 			toon.externalVelX = toon.externalVelX * 0.95;
 			if (toon.externalVelX < 0.05) toon.externalVelX = 0;
+		}	
+
+		// If toon on/past the floor?
+		if (toon.y <= 0) {
+			if (toon.externalVelY < 0) {
+				toon.externalVelY = 0;
+			}
+		} else { // Not on the floor, so subject to gravity
+			// Gravity
+			toon.externalVelY -= (0.2 * weightMultiplier);
 		}
-		// Gravity
-		toon.externalVelY -= (0.2 * weightMultiplier);
+
 		// New Location based on velocity
 		toon.x += (toon.locomotionVelX + toon.externalVelX);
-		toon.y += (toon.locomotionVelY + toon.externalVelY);
+		toon.y += (toon.locomotionVelY + toon.externalVelY);	
 		
 		this.updateToonFacing(toon);
 		
@@ -925,12 +949,28 @@ var PFGameClass = function ()
 		} else {							// Somewhere Inside
 			toon.isOutside = false;
 		}
+		
 		// Check boundaries Y
 		if (toon.y <= 0) {
 			toon.y = 0;
 		}
+
 		// Update Position
 		toon.$elt.css({ "left" : toon.x, "bottom" : toon.y });
+	}
+	
+	// Combat Impact Physics
+	this.hitToon = function (toon, hittingToon) 
+	{
+		var damper = 1;			// *** connect this to weight/mass?
+		if (toon.key == "G0") {
+			toon.externalVelY += 1; 
+			damper = 8;
+		}
+		if (toon.x < hittingToon.x) {			toon.externalVelX -= (8 / damper); }
+		else if (toon.x > hittingToon.x) {		toon.externalVelX += (8 / damper); }
+		else {									toon.externalVelY += (1 / damper); }
+
 	}
 	
 	this.turnToon = function (toon, facing) 
@@ -1004,13 +1044,17 @@ var PFGameClass = function ()
 							var goonType = this.data.goons[goon.goonTypeId];
 							var dist = o.getDistanceBetween(goon.x, goon.y, invader.x, invader.y);
 							if (dist < o.meleeRange) {
+								// Roll for invader attack
 								var toHitRoll = o.roll1d(10);
 								if (toHitRoll > 4) {
 									o.damageToon(goon, invader.damage);
+									o.hitToon(goon, invader);
 								}
+								// Roll for goon attack
 								toHitRoll = o.roll1d(10);
 								if (toHitRoll > 4) {
 									o.damageToon(invader, goon.damage);
+									o.hitToon(invader, goon);
 								}
 							}
 						}
@@ -1072,9 +1116,6 @@ var PFGameClass = function ()
 		// Is the toon is dead, not fully decyaed and not immortal, then you can loot!
 		var isToonLootable = toon.isDead && toon.decay > 0 && !toon.isImmortal;
 		if (isToonLootable) {
-			console.log("Looting Toon"); 
-			console.log(toon.decay);
-			//console.log(JSON.stringify(toon));
 			toon.decay = 0;
 			toon.$elt.addClass("decayed");
 			if (toon.isUndead) {
@@ -1085,9 +1126,8 @@ var PFGameClass = function ()
 					this.total.gold += this.roll1d(8);
 				}		
 			}
-			console.log(toon.decay);
-			console.log("Toon looted"); 
-			//console.log(JSON.stringify(toon));
+			toon.externalVelX = this.getRandomVelocity();
+			toon.externalVelY += 7;
 		}
 	}
 	

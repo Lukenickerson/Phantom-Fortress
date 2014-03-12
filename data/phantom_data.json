@@ -24,7 +24,7 @@
 		}
 		,{
 			"name"		: "Tunnel"
-			,"description" : "An earthen tunnel dug under the fortress."
+			,"description" : "An earthen tunnel dug under the fortress. Dirty and pointless."
 			,"jobName"	: "digger"
 			,"forSale"	: false
 			,"cost" 		: { "gold" : 100 }			
@@ -175,7 +175,18 @@
 			,"forSale"	: false
 			,"hitPoints" 	: 30
 			,"damage"		: 1
-		}	
+		}
+		,{
+			"name"		: "Ghoul Bat"
+			,"isUndead"	: true
+			,"weightMultiplier" : 0.4
+			,"forSale"	: true
+			,"cost" : {
+				"souls" : 4
+			}
+			,"hitPoints" 	: 8
+			,"damage"		: 1
+		}		
 		,{
 			"name"		: "Ghost"
 			,"isUndead"	: true
@@ -184,7 +195,7 @@
 			,"cost" : {
 				"souls" : 10
 			}
-			,"hitPoints" 	: 10
+			,"hitPoints" 	: 12
 			,"damage"		: 2
 		}
 		,{
@@ -204,7 +215,7 @@
 			,"weightMultiplier" : 0.1
 			,"forSale"	: true
 			,"cost" : {
-				"souls" : 30
+				"souls" : 40
 			}
 			,"hitPoints" 	: 10
 			,"damage"		: 6
@@ -219,7 +230,18 @@
 			}
 			,"hitPoints" 	: 40
 			,"damage"		: 2
-		}		
+		}
+		,{
+			"name"		: "Wizard Eye"
+			,"isUndead"	: false
+			,"weightMultiplier" : 0.08
+			,"forSale"	: true
+			,"cost" : {
+				"arcane" : 300
+			}
+			,"hitPoints" 	: 100
+			,"damage"		: 20
+		}			
 	]
 	,"invaders" : [
 		{

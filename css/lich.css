@@ -629,10 +629,14 @@ li.viewAssignWorker:hover {
 .zoom2 .goon, .zoom2 .invader {		width: 50px; height: 50px; }
 .zoom3 .goon, .zoom3 .invader {		width: 25px; height: 25px; }
 
+
 .goon:hover, .invader:hover {
-	color: white;
+	/* color: white;
 	text-shadow: 0 0 0.1em black, 1px 1px 0 black;
+	*/
+	opacity: 0.95;
 }
+
 .goon_PhantomLord {
 	width: 140px;
 	height: 140px;
@@ -690,6 +694,9 @@ li.viewAssignWorker:hover {
 
 .dead {
 	cursor: pointer;
+}
+.dead:not(.goon_PhantomLord) {
+	z-index: 30;
 }
 .dead:hover {
 	opacity: 0.8;

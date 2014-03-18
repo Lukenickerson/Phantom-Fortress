@@ -41,7 +41,7 @@ var PFGameClass = function ()
 		,"groups"	: {}
 		*/
 	};
-	this.version = "0.55";
+	this.version = "0.56";
 	//==== Game Data
 	this.game = {
 		"floorKeyCounter" : 0
@@ -890,11 +890,15 @@ var PFGameClass = function ()
 		}
 	}
 	
+	// Simulate physics
 	this.moveToon = function (toon, toonType) 
 	{
-		var toonWidth = toon.$elt.width();
-		var maxX = this.floorWidth - toonWidth;
-		//var toonMidX = toon.x + (toonWidth/2);
+		// *** set width somewhere else
+		if (typeof toon.width === 'undefined') {
+			toon.width = toon.$elt.width();
+		}
+		var maxX = this.floorWidth - toon.width;
+		//var toonMidX = toon.x + (toon.width/2);
 		var velX = 0, velY = 0;
 		var isOnGround = (toon.y <= 0);
 		var weightMultiplier = toonType.weightMultiplier;
@@ -933,7 +937,7 @@ var PFGameClass = function ()
 		toon.x += (toon.locomotionVelX + toon.externalVelX);
 		toon.y += (toon.locomotionVelY + toon.externalVelY);	
 		
-		this.updateToonFacing(toon);
+		//this.updateToonFacing(toon); // Don't run this every time?
 		
 		// Check boundaries X
 		if (toon.x <= 0) {					// Left Edge
@@ -956,7 +960,9 @@ var PFGameClass = function ()
 		}
 
 		// Update Position
-		toon.$elt.css({ "left" : toon.x, "bottom" : toon.y });
+		//toon.$elt.css({ "left" : toon.x, "bottom" : toon.y });
+		toon.$elt[0].style.left = toon.x + "px";
+		toon.$elt[0].style.bottom = toon.y + "px";
 	}
 	
 	// Combat Impact Physics
@@ -985,10 +991,17 @@ var PFGameClass = function ()
 	
 	this.updateToonFacing = function (toon)
 	{	
-		if (toon.facing == "left") {
-			toon.$elt.addClass("leftFacing").removeClass("rightFacing");
-		} else if (toon.facing == "right") {
-			toon.$elt.addClass("rightFacing").removeClass("leftFacing");
+		var toonEltClassList = toon.$elt[0].classList;
+		// 'contains' is IE10+ http://youmightnotneedjquery.com/#has_class
+		var isLeftFacing = (toonEltClassList.contains("leftFacing")) ? true : false;
+		if (toon.facing == "left" && !isLeftFacing) {
+			//toon.$elt.addClass("leftFacing").removeClass("rightFacing");
+			toonEltClassList.add("leftFacing");
+			toonEltClassList.remove("rightFacing");
+		} else if (toon.facing == "right" && isLeftFacing) {
+			//toon.$elt.addClass("rightFacing").removeClass("leftFacing");
+			toonEltClassList.add("rightFacing");
+			toonEltClassList.remove("leftFacing");
 		}	
 	}
 	
@@ -1215,6 +1228,31 @@ var PFGameClass = function ()
 	
 	this.displayTotals = function ()
 	{
+		var h = '<ul>'
+			+ '<li><span class="currNum goldNum">'
+			+ this.getDisplayNumber(this.total.gold)
+			+ '</span><span class="currencyIcon icon_gold"><span>Gold</span></span></li>'
+			+ '<li><span class="currNum soulsNum">'
+			+ this.getDisplayNumber(this.total.souls)
+			+ '</span><span class="currencyIcon icon_souls"><span>Soul Shards</span></span></li>'
+			+ '<li><span class="currNum arcaneNum">'
+			+ this.getDisplayNumber(this.total.arcane)
+			+ '</span><span class="currencyIcon icon_arcane"><span>Arcane Knowledge</span></span></li>'
+				//'<!---<li><span class="currNum foodNum">'
+				// this.getDisplayNumber(this.total.food)
+				// '</span><span class="currencyIcon icon_food">Food</span></li>--->'
+			+ '<li><span class="currNum stoneNum">'
+			+ this.getDisplayNumber(this.total.stone)
+			+ '</span><span class="currencyIcon icon_stone"><span>Stone</span></span></li>'
+			+ '<li><span class="currNum oreNum">'
+			+ this.getDisplayNumber(this.total.ore)
+			+ '</span><span class="currencyIcon icon_ore"><span>Ore</span></span></li>'		
+			+ '<li><span class="currNum floorNum">'
+			+ this.totalFloorCount
+			+ '</span><span class="currencyIcon icon_floors"><span>Floors</span></span></li>'
+			+ '</ul>';
+		this.$currency[0].innerHTML = h;
+		/*
 		this.$currency.find('.goldNum').html(this.getDisplayNumber(this.total.gold));
 		this.$currency.find('.soulsNum').html(this.getDisplayNumber(this.total.souls));
 		this.$currency.find('.arcaneNum').html(this.getDisplayNumber(this.total.arcane));
@@ -1222,6 +1260,7 @@ var PFGameClass = function ()
 		this.$currency.find('.oreNum').html(this.getDisplayNumber(this.total.ore));
 		this.$currency.find('.foodNum').html(this.getDisplayNumber(this.total.food));
 		this.$currency.find('.floorNum').html(this.totalFloorCount);
+		*/
 	}
 	
 	this.calculatePerSecondValues = function () 
@@ -1323,8 +1362,9 @@ var PFGameClass = function ()
 	*/
 	
 	this.getDisplayNumber = function(n) {
-		if (n >= 5) n = parseInt(n);
-		else n = Math.round( n * 10 ) / 10;
+		n = parseInt(n);
+		//if (n >= 5) n = parseInt(n);
+		//else n = Math.round( n * 10 ) / 10;
 		return n.toLocaleString('en');
 	}
 	

@@ -1564,7 +1564,8 @@ var PFGameClass = function ()
 		// Some UI stuff that will be constant
 		
 		$('.openSettings').click(function(e){
-			o.$settings.slideDown();
+			var top = o.$body.scrollTop();
+			o.$settings.slideDown().css("top", top);
 			$('footer').fadeIn();
 			console.log($('footer'));
 		});

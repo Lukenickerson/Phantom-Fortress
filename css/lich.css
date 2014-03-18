@@ -288,7 +288,7 @@ footer a {
 /* === Floor Info === */
 
 #floorMenu {
-	margin-top: 160px;
+	
 	max-width: 600px;
 	margin-left: 10%;
 	text-align: center;
@@ -296,10 +296,11 @@ footer a {
 
 .floorSizeMenu {
 	max-width: 600px;
+	margin-top: 160px;
 }
 	.zoom1 .floorSizeMenu {		max-width: 450px; margin-top: 120px;}
 	.zoom2 .floorSizeMenu {		max-width: 300px; margin-top: 80px;	}
-	.zoom3 .loorSizeMenu {		max-width: 150px; margin-top: 40px;	}
+	.zoom3 .floorSizeMenu {		max-width: 150px; margin-top: 40px;	}
 
 #floorMenu > div {
 	display: none;
@@ -570,8 +571,6 @@ li.viewAssignWorker:hover {
 }
 .floor:hover .floorName {
 	opacity: 1;
-	
-	
 }
 
 .floorTop {			background-image: url('../images/floor_top.png'); }
@@ -603,6 +602,13 @@ li.viewAssignWorker:hover {
 	display: block; 
 	padding: 0; margin: 0;
 }
+.zoom1 .naturalResourcesIndicator { font-size: 80%; left: -30px; }
+.zoom2 .naturalResourcesIndicator { font-size: 60%; left: -20px; }
+.zoom3 .naturalResourcesIndicator { font-size: 40%; left: -10px; }
+.zoom1 .naturalResourcesIndicator .currencyIcon {	width: 24px; height: 24px; }
+.zoom2 .naturalResourcesIndicator .currencyIcon {	width: 16px; height: 16px; }
+.zoom3 .naturalResourcesIndicator .currencyIcon {	width: 8px; height: 8px; }
+
 .nrNum {
 
 }

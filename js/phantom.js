@@ -632,8 +632,10 @@ var PFGameClass = function ()
 					//,"ore"	: 0
 					//,"gold"	: 0
 				};
+				if (o.game.floorArray.length == 2) nr.gold = 100;
 				if (o.roll1d(3) == 1) nr.ore = (o.roll1d(10) * 50); // 50 - 500
 				if (o.roll1d(5) == 1) nr.gold = (o.roll1d(6) * 50); // 50 - 300
+				
 				o.game.floors[newFloorKey].naturalResources = nr;
 			}
 			//console.log(o.game.floors[newFloorKey]);
@@ -1478,15 +1480,19 @@ var PFGameClass = function ()
 			$('footer').fadeOut();	
 		}
 		
+		var clickFloor = function ($floor) {
+			var floorKey = $floor.data("floorkey");
+			o.selectFloor(floorKey);
+			//var top = o.$body.scrollTop();
+			var top = $floor.offset().top;
+			o.viewFloor(floorKey, top, 0);		
+		}
+		
 		o.$body.on("click", function(e){
 			var $target = $(e.target);
 			console.log($target);
 			if ($target.hasClass("viewFloor")) {
-				var floorKey = $target.data("floorkey");
-				o.selectFloor(floorKey);
-				//var top = o.$body.scrollTop();
-				var top = $target.offset().top;
-				o.viewFloor(floorKey, top, 0);
+				clickFloor($target);
 				
 			} else if ($target.hasClass("floorTop")) {
 				
@@ -1505,6 +1511,8 @@ var PFGameClass = function ()
 				if ($target.hasClass("dead")) {
 					var goonKey = $target.data("goonkey");
 					o.lootCorpse(goonKey, true);
+				} else {
+					clickFloor($target.closest('.floor'));
 				}
 
 			} else if ($target.hasClass("invader")) {	
@@ -1512,7 +1520,12 @@ var PFGameClass = function ()
 				if ($target.hasClass("dead")) {
 					var invaderKey = $target.data("invaderkey");
 					o.lootCorpse(invaderKey, false);
+				} else {
+					clickFloor($target.closest('.floor'));
 				}
+				
+			} else if ($target.hasClass("floorName")) {
+				clickFloor($target.closest('.floor'));
 				
 			} else if ($target.hasClass("viewAssignWorker")) {
 				var floorKey = $target.data("floorkey");

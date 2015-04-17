@@ -68,6 +68,7 @@ var PFGameClass = function ()
 				,"externalVelY" : 0
 				,"x" : 0
 				,"y" : 0
+				//,"width" : 170
 				,"floorKey" : "0"
 				,"isOutside" : false
 				,"hp"		: 30
@@ -632,7 +633,7 @@ var PFGameClass = function ()
 					//,"ore"	: 0
 					//,"gold"	: 0
 				};
-				if (o.game.floorArray.length == 2) nr.gold = 100;
+				if (o.game.floorArray.length == 2) nr.gold = 250;
 				if (o.roll1d(3) == 1) nr.ore = (o.roll1d(10) * 50); // 50 - 500
 				if (o.roll1d(5) == 1) nr.gold = (o.roll1d(6) * 50); // 50 - 300
 				
@@ -788,6 +789,7 @@ var PFGameClass = function ()
 			,"facing" 		: faceWhere
 			,"x" : 0
 			,"y" : 0
+			//,"width" : ???
 			,"locomotionVelX" 	: this.getRandomVelocity(faceWhere)
 			,"locomotionVelY" 	: 0
 			,"externalVelX" 	: 0
